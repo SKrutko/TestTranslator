@@ -36,8 +36,8 @@ namespace TestTranslator
                 {
                     string nextLine = sr.ReadLine();
                     List<string> listOfTokens = getListOfTokens(nextLine);
-                    if(!isEmpty(listOfTokens))
-                        parser.parse(listOfTokens);
+                    for(int i = 0; i < listOfTokens.Count; i++)
+                        parser.parse(listOfTokens.ElementAt(i));
 
                 }
                 parser.end();
@@ -100,11 +100,6 @@ namespace TestTranslator
                             token = c.ToString();
                             addTokenToList(token, listOfTokens);
                         }
-                        /*else if(isDoubleSpecialCharacter(c))
-                        {
-                            token = c.ToString();
-                            newToken = false;
-                        }*/
                         else
                         {
                             token = c.ToString();
@@ -134,7 +129,7 @@ namespace TestTranslator
                         {
                             addTokenToList(token, listOfTokens);
                             token = c.ToString();
-                            newToken = false;//
+                            newToken = false;
                         }
                         else
                         {
@@ -175,11 +170,6 @@ namespace TestTranslator
         public bool isSpecialToken(string token)
         {
             return specialTokens.Contains(token);
-        }
-
-        bool canBeDoubleToken(char c)
-        {
-            return (prevToken == ' ' && isDoubleSpecialCharacter(c));
         }
     }
 }

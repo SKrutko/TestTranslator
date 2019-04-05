@@ -56,7 +56,7 @@ namespace TestTranslator
             parser = new Parser();
         }
 
-        [Test]
+       /* [Test]
         public void parse_givenUsingStatement_resultAddedUsingStatementoDocument()
         {
             string expectedUsingStatement = "System.Collections";
@@ -74,8 +74,8 @@ namespace TestTranslator
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(expectedUsingStatement, result[0].getStatement());
-        }
-        [Test]
+        }*/
+        /*[Test]
         public void parse_givenUsingStatement_resultAddedUsingStatementoDocument2()
         {
             string expectedUsingStatement1 = "System.Collections";
@@ -106,9 +106,9 @@ namespace TestTranslator
             Assert.AreEqual(2, result.Count);
             Assert.AreEqual(expectedUsingStatement1, result[0].getStatement());
             Assert.AreEqual(expectedUsingStatement2, result[1].getStatement());
-        }
+        }*/
 
-        [Test]
+        /*[Test]
         public void parse_givenUsingStatementsWithNUnit_resultWithoutNUsing()
         {
             string expectedUsingStatement1 = "System.Collections";
@@ -147,7 +147,7 @@ namespace TestTranslator
             Assert.AreEqual(2, result.Count);
             Assert.AreEqual(expectedUsingStatement1, result[0].getStatement());
             Assert.AreEqual(expectedUsingStatement2, result[1].getStatement());
-        }
+        }*/
 /*[Test]
         public void parse_givenUsingStatementsWithNamespace_resultWithNamespace()
         {
@@ -199,24 +199,78 @@ namespace TestTranslator
             Assert.AreEqual(ParserState.FoundnamespaceNameExpectedLeftBrace, parser.getState());
         }*/
 
-      /*[Test]
+      [Test]
         public void analize_givenUsingStatement_createdUsingStatementInDocument()
         {
-            string[] given = {"uisng", "System", ".", "Collections" , ";"};
+            string[] given = {"using", "System", ".", "Collections" , ";"};
+
+            for (int i = 0; i < 5; i++)
+                parser.analize(given[i]);
+
+
+
+            Document document = Program.GetDocument();
+            List < UsingStatement > result= document.getListOfUsingStatements();
+
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual("System.Collections", result[0].getStatement());
+        }
+
+        [Test]
+        public void analize_givenMultipleUsingStatements_createdListofUsingStatementsInDocument()
+        {
+            string[] given = { "using", "System", ".", "Collections", ";",
+                "using", "NUnit", ".", "Framework", ";",
+                "using", "System", ".", "Collections", ".", "Generic", ";",
+            };
+
+            for (int i = 0; i < 17; i++)
+                parser.analize(given[i]);
+
+            Document document = Program.GetDocument();
+            List<UsingStatement> result = document.getListOfUsingStatements();
+
+            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual("System.Collections", result[0].getStatement());
+            Assert.AreEqual("System.Collections.Generic", result[1].getStatement());
+        }
+
+        [Test]
+        public void analize_givenUsingStAndNamespace_createdNamespaceInDocument()
+        {
+            string[] given = { "using", "System", ".", "Collections", ";",
+                "using", "NUnit", ".", "Framework", ";",
+                "using", "System", ".", "Collections", ".", "Generic", ";",
+                "namespace", "HelloName", ".", "Collections", "{"
+            };
+
+            for (int i = 0; i < 22; i++)
+                parser.analize(given[i]);
+
+            Document document = Program.GetDocument();
+            List<UsingStatement> result = document.getListOfUsingStatements();
+            string resultName = document.getNamespaceStatement();
+
+            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual("System.Collections", result[0].getStatement());
+            Assert.AreEqual("System.Collections.Generic", result[1].getStatement());
+            Assert.AreEqual("HelloName.Collections", resultName);
+            Assert.AreEqual(ParserState.ExpectedClass, parser.getState());
+        }
+
+        [Test]
+        public void analize_givenNamespace_createdNamespaceInDocument()
+        {
+            string[] given = { "namespace", "Namespace", ".", "Name", "{"};
 
             for (int i = 0; i < 5; i++)
                 parser.analize(given[i]);
 
             Document document = Program.GetDocument();
-            List < UsingStatement > result= document.getListOfUsingStatements();
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual("System.Collections", result[0].getStatement());
+            string result = document.getNamespaceStatement();
 
-
-        }*/
-
-
-
-
+            Assert.AreEqual("Namespace.Name", result);
+            Assert.AreEqual(ParserState.ExpectedClass, parser.getState());
+        }
     }
 }

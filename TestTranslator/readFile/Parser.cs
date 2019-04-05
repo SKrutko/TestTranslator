@@ -14,20 +14,23 @@ namespace TestTranslator
         static Document document;
 
         private string usingDirective = "";
+        private string namespaceName = "";
+
+        private string errorMessage = "";
 
         public Parser()
         {
             state = ParserState.ExpectedUsingStatementOrNamespace;
             fillInDictionary();
-
+            document = Program.GetDocument();
         }
 
-        public void parse(List<string>listOfTokens)
+        public void parse(string token)
         {
             try
             {
-                document = Program.GetDocument();
-                analize(listOfTokens);
+                
+                analize(token);
             }
             catch (NullReferenceException ex)
             {
@@ -40,7 +43,7 @@ namespace TestTranslator
             
             //end();
         }
-        /*public void analize(string nextToken)
+        public void analize(string nextToken)
         {
             switch (state)
             {
@@ -68,14 +71,34 @@ namespace TestTranslator
                     break;
 
                 case ParserState.FoundNamespaceExpectedName:
-                    break;
-                case ParserState.FoundnamespaceNameExpectedLeftBrace:
+                    doIfFoundNamespaceExpectedName(nextToken);
                     break;
                 case ParserState.ExpectedClass:
                     break;
 
             }
-        }*/
+        }
+
+        private void doIfFoundNamespaceExpectedName(string nextToken)
+        {
+            if (nextToken.Equals("{")) //the end of the namespace name
+            {
+                if (namespaceName.Equals(""))
+                {
+                    state = ParserState.Error;
+                    errorMessage = "No namespace name given";
+                }
+                else
+                {
+                    state = ParserState.ExpectedClass;
+                    document.addNamespaceStatement(namespaceName);
+                }
+            }
+            else
+            {
+                namespaceName += nextToken;
+            }
+        }
         public void analize(List<string> listOfTokens)
         {
             
