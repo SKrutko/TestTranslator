@@ -21,7 +21,7 @@ namespace TestTranslator
         }
         public Scanner(FileStream _fs)
         {
-            this.fs = _fs;
+            fs = _fs;
             fillInListSpecialCharacters();
         }
 
@@ -35,9 +35,10 @@ namespace TestTranslator
                 while (!sr.EndOfStream)
                 {
                     string nextLine = sr.ReadLine();
-                    List<string> listOfTokens = getListOfTokens(nextLine);
-                    for(int i = 0; i < listOfTokens.Count; i++)
-                        parser.parse(listOfTokens.ElementAt(i));
+                    List<scannerResponse> listOfTokens = getListOfTokens(nextLine);
+                    int lengthOfLine = listOfTokens.Count;
+                    for(int i = 0; i < lengthOfLine; i++)
+                        parser.parse(listOfTokens.ElementAt(i).token, listOfTokens.ElementAt(i).space, i == lengthOfLine - 1);
 
                 }
                 parser.end();
@@ -81,11 +82,12 @@ namespace TestTranslator
 
         }
 
-        public List<string> getListOfTokens(string line)
+        public List<scannerResponse> getListOfTokens(string line)
         {
             bool newToken = true;
-            List<string> listOfTokens = new List<string>();
+            List<scannerResponse> listOfTokens = new List<scannerResponse>();
             string token = "";
+            bool space = false;
 
             char[] characters = line.ToArray();
 
@@ -98,7 +100,7 @@ namespace TestTranslator
                         if (isSingleSpecialCharacter(c))
                         {
                             token = c.ToString();
-                            addTokenToList(token, listOfTokens);
+                            addTokenToList(token, space, listOfTokens);
                         }
                         else
                         {
@@ -106,6 +108,8 @@ namespace TestTranslator
                             newToken = false;
                         }
                     }
+                    else 
+                        space = true;
 
                 }
                 else
@@ -115,19 +119,21 @@ namespace TestTranslator
                         if (isSpecialToken(token + c))
                         {
                             token += c;
-                            addTokenToList(token, listOfTokens);
+                            addTokenToList(token, space, listOfTokens);
                             newToken = true;
                         }
                         else if(isSingleSpecialCharacter(c))
                         {
-                            addTokenToList(token, listOfTokens);
+                            addTokenToList(token, space, listOfTokens);
                             token = c.ToString();
-                            addTokenToList(token, listOfTokens);
+                            space = false;
+                            addTokenToList(token, space, listOfTokens);
                             newToken = true;
                         }
                         else if(isDoubleSpecialCharacter(c))
                         {
-                            addTokenToList(token, listOfTokens);
+                            addTokenToList(token, space, listOfTokens);
+                            space = false;
                             token = c.ToString();
                             newToken = false;
                         }
@@ -138,24 +144,25 @@ namespace TestTranslator
                     }
                     else
                     {
-                        addTokenToList(token, listOfTokens);
+                        addTokenToList(token, space, listOfTokens);
                         newToken = true;
                         token = " ";
+                        space = true;
                     }
                 }
             }
 
             if (!newToken)
-                addTokenToList(token, listOfTokens);
+                addTokenToList(token, space, listOfTokens);
 
             return listOfTokens;
         }
 
-        private void addTokenToList(string token, List<string> listOfTokens)
+        private void addTokenToList(string token, bool space, List<scannerResponse> listOfTokens)
         {
             if (!token.Equals("") && !token.Equals(" "))
             {
-                listOfTokens.Add(token);
+                listOfTokens.Add(new scannerResponse(token, space));
             }
         }
 

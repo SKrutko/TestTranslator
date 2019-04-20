@@ -25,12 +25,12 @@ namespace TestTranslator
             document = Program.GetDocument();
         }
 
-        public void parse(string token)
+        public void parse(string token, bool space, bool endl)
         {
             try
             {
                 
-                analize(token);
+                analize(token, space, endl);
             }
             catch (NullReferenceException ex)
             {
@@ -43,7 +43,7 @@ namespace TestTranslator
             
             //end();
         }
-        public void analize(string nextToken)
+        public void analize(string nextToken, bool space, bool endl)
         {
             switch (state)
             {
