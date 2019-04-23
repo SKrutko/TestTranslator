@@ -10,6 +10,7 @@ namespace TestTranslator
     public class Parser
     {
         private ParserState state;
+        private ParserState prevState;
         private Dictionary<string, TokenType> keyWords;
         static Document document;
 
@@ -17,6 +18,11 @@ namespace TestTranslator
         private string namespaceName = "";
 
         private string errorMessage = "";
+        private string oneLineComment = "";
+        private List<string> multipleLineComment = new List<string>();
+
+        private bool newLine = true;
+        private bool commentIsAfterCode = false;
 
         public Parser()
         {
@@ -29,7 +35,6 @@ namespace TestTranslator
         {
             try
             {
-                
                 analize(token, space, endl);
             }
             catch (NullReferenceException ex)
@@ -45,40 +50,114 @@ namespace TestTranslator
         }
         public void analize(string nextToken, bool space, bool endl)
         {
-            switch (state)
+            if(getTokenType(nextToken) == TokenType.Comment)
             {
-                case ParserState.ExpectedUsingStatementOrNamespace:
-                    if(getTokenType(nextToken) == TokenType.Using)
-                    {
-                        state = ParserState.FoundUsingExpectedDirectoryName;
-                        usingDirective = "";
-                    }
-                    else if (getTokenType(nextToken) == TokenType.Namespace)
-                    {
-                        state = ParserState.FoundNamespaceExpectedName;
-                    }
+                prevState = state;
+                if (nextToken.Equals("//"))
+                {
+                    changeState(ParserState.OneLineComment);
+                    oneLineComment = "";
+                    commentIsAfterCode = !newLine;
+                }
+                else // "/*"
+                {
+                    changeState(ParserState.MultipleLineComment);
+                    oneLineComment = "";
+                    commentIsAfterCode = !newLine;
+                }
+            }
+            else switch (state)
+            {
+                case ParserState.OneLineComment:
+                     doIfOneLineComment(nextToken, space, endl);
+                     break;
+
+               case ParserState.MultipleLineComment:
+                    doIfMultipleLineComment(nextToken, space, endl);
+                    break;
+
+                    case ParserState.ExpectedUsingStatementOrNamespace:
+                    doIfExpectedUsingStatementOrNamespace(nextToken);
                     break;
 
                 case ParserState.FoundUsingExpectedDirectoryName:
-                    if (nextToken != ";")
-                        usingDirective += nextToken;
-                    else
-                    {
-                        state = ParserState.ExpectedUsingStatementOrNamespace;
-                        if (!usingDirective.Equals("NUnit.Framework"))
-                            document.addUsingStatement(usingDirective);
-                    }
+                    doIfFoundUsingExpectedDirectoryName(nextToken);
                     break;
 
                 case ParserState.FoundNamespaceExpectedName:
                     doIfFoundNamespaceExpectedName(nextToken);
                     break;
+
                 case ParserState.ExpectedClass:
+                    doIfExpectedClass(nextToken);
+                    break;
+
+                case ParserState.ExpectedCWClass:
+                    doIfExpectedCWClass(nextToken);
+                    break;
+
+                case ParserState.FoundCWClassExpectedClassName:
+                    doIfFoundCWClassExpectedClassName(nextToken);
                     break;
 
             }
+
+            newLine = endl;
+        }
+        private void doIfOneLineComment(string nextToken, bool space, bool endl)
+        {
+            if (space)
+                oneLineComment += " ";
+            oneLineComment += nextToken;
+            if(endl)
+            {
+                changeState(prevState);
+                document.addComment(oneLineComment, commentIsAfterCode);
+            }
         }
 
+        private void doIfMultipleLineComment(string nextToken, bool space, bool endl)
+        {
+            if (nextToken.Equals("*/"))
+            {
+                    changeState(prevState);
+                    document.addComment(multipleLineComment, commentIsAfterCode);
+            }
+            else
+            {
+                if (space)
+                    oneLineComment += " ";
+                oneLineComment += nextToken;
+                if (endl)
+                {
+                    multipleLineComment.Add(oneLineComment);
+                    oneLineComment = "";
+                }
+            }
+        }
+        private void doIfExpectedUsingStatementOrNamespace(string nextToken)
+        {
+            if (getTokenType(nextToken) == TokenType.Using)
+            {
+                state = ParserState.FoundUsingExpectedDirectoryName;
+                usingDirective = "";
+            }
+            else if (getTokenType(nextToken) == TokenType.Namespace)
+            {
+                state = ParserState.FoundNamespaceExpectedName;
+            }
+        }
+        private void doIfFoundUsingExpectedDirectoryName(string nextToken)
+        {
+            if (nextToken != ";")
+                usingDirective += nextToken;
+            else
+            {
+                state = ParserState.ExpectedUsingStatementOrNamespace;
+                if (!usingDirective.Equals("NUnit.Framework"))
+                    document.addUsingStatement(usingDirective);
+            }
+        }
         private void doIfFoundNamespaceExpectedName(string nextToken)
         {
             if (nextToken.Equals("{")) //the end of the namespace name
@@ -99,68 +178,105 @@ namespace TestTranslator
                 namespaceName += nextToken;
             }
         }
-        public void analize(List<string> listOfTokens)
+        private void doIfExpectedClass(string nextToken) // expected "[" or "private"
         {
-            
-            if (state == ParserState.ExpectedUsingStatementOrNamespace)
+            switch (nextToken)
             {
-                if (getTokenType(listOfTokens.ElementAt(0)) == TokenType.Using)
-                {
-                    string directive = "";
-                    for(int i = 1; i < listOfTokens.Count; i++)
-                    {
-                        string nextToken = listOfTokens.ElementAt(i);
-                        if (nextToken != ";")
-                            directive += nextToken;
-                    }
-                    if (!directive.Equals("NUnit.Framework"))
-                        document.addUsingStatement(directive);
-                }
-                else  if(getTokenType(listOfTokens.ElementAt(0)) == TokenType.Namespace)
-                {
-                    state = ParserState.FoundNamespaceExpectedName;
-                    if(listOfTokens.Count > 1)
-                    {
-                        string name = "";
-                        for (int i = 1; i < listOfTokens.Count; i++)
-                        {
-                            string nextToken = listOfTokens.ElementAt(i);
-                            if (nextToken != "{")
-                                name += nextToken;
-                            else
-                                state = ParserState.ExpectedClass;
-                        }
-                        if (state != ParserState.ExpectedClass)
-                            state = ParserState.FoundnamespaceNameExpectedLeftBrace;
-                        document.addNamespaceStatement(name);
-                    }
-                   
-
-                }
+                case "[":
+                    //TODO: attribute
+                    break;
+                case "public":
+                    changeState(ParserState.ExpectedCWClass);
+                    break;
+                case "class":
+                    changeState(ParserState.FoundCWClassExpectedClassName);
+                    break;
+                default:
+                    //TODO : mistake?
+                    break;
             }
         }
-        /*private void changeStateToPhaseTwo()
+        private void doIfExpectedCWClass(string nextToken)
         {
-            //if in input file hasn't been found "using NUnit.Framework" then them input file is not NUnit test
-            if (!document.foundUsingNUnitStatement())
-                state = ParserState.Error;
+            if (nextToken.Equals("class"))
+            {
+                changeState(ParserState.FoundCWClassExpectedClassName);
+            }
             else
-                state = ParserState.PhaseTwo;
-        }*/
+            {
+                changeState(ParserState.Error);
+            }
+        }
 
-
+        private void doIfFoundCWClassExpectedClassName(string nextToken)
+        {
+            document.addClass(nextToken);
+            changeState(ParserState.FoundClassNameExpectedLeftBrace);
+        }
+       
         public void end()
         {
             MainFormController mfc = Program.getMainFormController();
             FormMain formMain = mfc.getForm();
             List <UsingStatement> usingStatements = document.getListOfUsingStatements();
+            List<OneLineComment> onelineComments = document.getListOfOneLineComments();
             if (getState() != ParserState.Error)
             {
-                for (int i = 0; i < usingStatements.Count; i++)
+                //for (int i = 0; i < usingStatements.Count; i++)
+                //{
+                //    formMain.print("using statement: " + usingStatements[i].getStatement());
+                //}
+                //formMain.print("namespace name:" + document.getNamespaceStatement());
+                string nextLine = "document structure size is " + document.getDocumentStructure().Count;
+                int i = 0, olci = 0, mlci = 0;
+            foreach(documentUnit du in document.getDocumentStructure())
                 {
-                    formMain.print("using statement: " + usingStatements[i].getStatement());
+                    switch (du)
+                    {
+                        case documentUnit.Using:
+                            formMain.print(nextLine);
+                            nextLine = "using statement: " + usingStatements[i++].getStatement();
+                            break;
+                        case documentUnit.Namespace:
+                            formMain.print(nextLine);
+                            nextLine = "namespace: " + document.getNamespaceStatement();
+                            break;
+                        case documentUnit.OneLineCommentAfterCode:
+                            nextLine += " //" + onelineComments[olci++].getMessage();
+                            break;
+                        case documentUnit.OneLineComment:
+                            formMain.print(nextLine);
+                            nextLine = " //" + onelineComments[olci++].getMessage();
+                            break;
+                        case documentUnit.MultipleLineComment:
+                            formMain.print(nextLine);
+                            nextLine = "/* " + document.getListOfMultipleLineComments()[mlci++];
+                            for (int k = 0; k < document.getListOfMultipleLineComments()[mlci].getMessage().Count; k++)
+                            {
+                                formMain.print(nextLine);
+                                nextLine = document.getListOfMultipleLineComments()[mlci].getMessage()[k];
+                            }
+                            nextLine += " */";
+                            break;
+                        case documentUnit.MultipleLineCommentAfterCode:
+                            //formMain.print(nextLine);
+                            nextLine += " /* " + document.getListOfMultipleLineComments()[mlci++];
+                            for (int k = 0; k < document.getListOfMultipleLineComments()[mlci].getMessage().Count; k++)
+                            {
+                                formMain.print(nextLine);
+                                nextLine = document.getListOfMultipleLineComments()[mlci].getMessage()[k];
+                            }
+                            nextLine += " */";
+                            break;
+                        default:
+                            formMain.print(nextLine);
+                            nextLine += "other";
+                            break;
+
+                    }
+                    
                 }
-                formMain.print("namespace name:" + document.getNamespaceStatement());
+                formMain.print(nextLine);
             }
             else
                 formMain.print("error in syntax. Are you sure you have loaded NUnit test?");
@@ -181,10 +297,11 @@ namespace TestTranslator
             keyWords.Add("using", TokenType.Using);
             keyWords.Add("namespace", TokenType.Namespace);
             keyWords.Add("Test", TokenType.Attribute);
-
+            keyWords.Add("//", TokenType.Comment);
+            keyWords.Add("/*", TokenType.Comment);
         }
 
-        private void changeState(ParserState newState)
+        public void changeState(ParserState newState)
         {
             state = newState;
         }
@@ -193,6 +310,10 @@ namespace TestTranslator
         {
             return state;
         }
+        /*public void setPrevState(ParserState prev)
+        {
+            prevState = prev;
+        }*/
 
     }
 }

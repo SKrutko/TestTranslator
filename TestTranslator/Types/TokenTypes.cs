@@ -7,7 +7,22 @@
         ClassAttribute,
         Attribute,
         Assertion,
-        NonToken
+        NonToken,
+        Comment
+    }
+
+    public enum documentUnit
+    {
+        Using,
+        Namespace,
+        ClassAttribute,
+        Attribute,
+        Assertion,
+        NonToken,
+        OneLineComment,
+        OneLineCommentAfterCode,
+        MultipleLineComment,
+        MultipleLineCommentAfterCode,
     }
 
     public enum ParserState
@@ -17,6 +32,12 @@
         FoundNamespaceExpectedName,
         FoundnamespaceNameExpectedLeftBrace, //expected {
         ExpectedClass,
+        ExpectedCWClass,//Code Word
+        FoundCWClassExpectedClassName,
+        FoundClassNameExpectedLeftBrace,
+
+        OneLineComment,
+        MultipleLineComment,
 
         Error
     }

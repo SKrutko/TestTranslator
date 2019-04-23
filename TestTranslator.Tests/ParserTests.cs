@@ -1,6 +1,11 @@
 using NUnit.Framework;
-using System.Collections;
+using System.Collections; //comment 1
 using System.Collections.Generic;
+
+/* multiple
+ * line
+ * comment
+ * */
 
 namespace TestTranslator
 {
@@ -56,156 +61,15 @@ namespace TestTranslator
             parser = new Parser();
         }
 
-       /* [Test]
-        public void parse_givenUsingStatement_resultAddedUsingStatementoDocument()
-        {
-            string expectedUsingStatement = "System.Collections";
-
-            List<string> givenListOfTokens = new List<string>();
-            givenListOfTokens.Add("using");
-            givenListOfTokens.Add("System");
-            givenListOfTokens.Add(".");
-            givenListOfTokens.Add("Collections");
-            givenListOfTokens.Add(";");
-            Document document = Program.GetDocument();
-
-            parser.parse(givenListOfTokens);
-            List<UsingStatement> result = document.getListOfUsingStatements();
-
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(expectedUsingStatement, result[0].getStatement());
-        }*/
-        /*[Test]
-        public void parse_givenUsingStatement_resultAddedUsingStatementoDocument2()
-        {
-            string expectedUsingStatement1 = "System.Collections";
-            string expectedUsingStatement2 = "System.Collections.Generic";
-
-            List<string> givenListOfTokens1 = new List<string>();
-            givenListOfTokens1.Add("using");
-            givenListOfTokens1.Add("System");
-            givenListOfTokens1.Add(".");
-            givenListOfTokens1.Add("Collections");
-            givenListOfTokens1.Add(";");
-
-            List<string> givenListOfTokens2 = new List<string>();
-            givenListOfTokens2.Add("using");
-            givenListOfTokens2.Add("System");
-            givenListOfTokens2.Add(".");
-            givenListOfTokens2.Add("Collections");
-            givenListOfTokens2.Add(".");
-            givenListOfTokens2.Add("Generic");
-            givenListOfTokens2.Add(";");
-
-            Document document = Program.GetDocument();
-            parser.parse(givenListOfTokens1);
-            parser.parse(givenListOfTokens2);
-
-            List<UsingStatement> result = document.getListOfUsingStatements();
-
-            Assert.AreEqual(2, result.Count);
-            Assert.AreEqual(expectedUsingStatement1, result[0].getStatement());
-            Assert.AreEqual(expectedUsingStatement2, result[1].getStatement());
-        }*/
-
-        /*[Test]
-        public void parse_givenUsingStatementsWithNUnit_resultWithoutNUsing()
-        {
-            string expectedUsingStatement1 = "System.Collections";
-            string expectedUsingStatement2 = "System.Collections.Generic";
-            
-            Document document = Program.GetDocument();
-
-            List<string> givenListOfTokens1 = new List<string>();
-            givenListOfTokens1.Add("using");
-            givenListOfTokens1.Add("System");
-            givenListOfTokens1.Add(".");
-            givenListOfTokens1.Add("Collections");
-            givenListOfTokens1.Add(";");
-
-            List<string> givenListOfTokens2 = new List<string>();
-            givenListOfTokens2.Add("using");
-            givenListOfTokens2.Add("System");
-            givenListOfTokens2.Add(".");
-            givenListOfTokens2.Add("Collections");
-            givenListOfTokens2.Add(".");
-            givenListOfTokens2.Add("Generic");
-            givenListOfTokens2.Add(";");
-
-            List<string> givenListOfTokens3 = new List<string>();
-            givenListOfTokens3.Add("using");
-            givenListOfTokens3.Add("NUnit");
-            givenListOfTokens3.Add(".");
-            givenListOfTokens3.Add("Framework");
-            givenListOfTokens3.Add(";");
-            List<UsingStatement> result = document.getListOfUsingStatements();
-
-            parser.parse(givenListOfTokens1);
-            parser.parse(givenListOfTokens2);
-            parser.parse(givenListOfTokens3);
-
-            Assert.AreEqual(2, result.Count);
-            Assert.AreEqual(expectedUsingStatement1, result[0].getStatement());
-            Assert.AreEqual(expectedUsingStatement2, result[1].getStatement());
-        }*/
-/*[Test]
-        public void parse_givenUsingStatementsWithNamespace_resultWithNamespace()
-        {
-            string expectedUsingStatement1 = "System.Collections";
-            string expectedUsingStatement2 = "System.Collections.Generic";
-            string expectedNamespace = "HelloName";
-
-            Document document = Program.GetDocument();
-
-            List<string> givenListOfTokens1 = new List<string>();
-            givenListOfTokens1.Add("using");
-            givenListOfTokens1.Add("System");
-            givenListOfTokens1.Add(".");
-            givenListOfTokens1.Add("Collections");
-            givenListOfTokens1.Add(";");
-
-            List<string> givenListOfTokens2 = new List<string>();
-            givenListOfTokens2.Add("using");
-            givenListOfTokens2.Add("System");
-            givenListOfTokens2.Add(".");
-            givenListOfTokens2.Add("Collections");
-            givenListOfTokens2.Add(".");
-            givenListOfTokens2.Add("Generic");
-            givenListOfTokens2.Add(";");
-
-            List<string> givenListOfTokens3 = new List<string>();
-            givenListOfTokens3.Add("using");
-            givenListOfTokens3.Add("NUnit");
-            givenListOfTokens3.Add(".");
-            givenListOfTokens3.Add("Framework");
-            givenListOfTokens3.Add(";");
-
-            List<string> givenListOfTokens4 = new List<string>();
-            givenListOfTokens4.Add("namespace");
-            givenListOfTokens4.Add("HelloName");
-            
-            List<UsingStatement> result = document.getListOfUsingStatements();
-            string namespaceResult = document.getNamespaceStatement();
-
-            parser.parse(givenListOfTokens1);
-            parser.parse(givenListOfTokens2);
-            parser.parse(givenListOfTokens3);
-            parser.parse(givenListOfTokens4);
-
-            Assert.AreEqual(2, result.Count);
-            Assert.AreEqual(expectedUsingStatement1, result[0].getStatement());
-            Assert.AreEqual(expectedUsingStatement2, result[1].getStatement());
-            Assert.AreEqual(expectedNamespace, namespaceResult);
-            Assert.AreEqual(ParserState.FoundnamespaceNameExpectedLeftBrace, parser.getState());
-        }*/
 
       [Test]
         public void analize_givenUsingStatement_createdUsingStatementInDocument()
         {
-            string[] given = {"using", "System", ".", "Collections" , ";"};
-
-            for (int i = 0; i < 5; i++)
-                parser.analize(given[i]);
+            string[] givenToken = {"using", "System", ".", "Collections" , ";"};
+            bool[] givenSpace = { false, true, false, false, false };
+            int numberOfGivenElements = 5;
+            for (int i = 0; i < numberOfGivenElements; i++)
+                parser.analize(givenToken[i], givenSpace[i], i == numberOfGivenElements - 1);
 
 
 
@@ -219,13 +83,19 @@ namespace TestTranslator
         [Test]
         public void analize_givenMultipleUsingStatements_createdListofUsingStatementsInDocument()
         {
-            string[] given = { "using", "System", ".", "Collections", ";",
+            string[] givenTokens = { "using", "System", ".", "Collections", ";",
                 "using", "NUnit", ".", "Framework", ";",
                 "using", "System", ".", "Collections", ".", "Generic", ";",
             };
+            bool[] givenSpaces = {false, true, false, false, false,
+            false, true, false, false, false,
+            false, true, false, false, false, false, false};
+            bool[] givenEndls = { false, false, false, false, true,
+            false, false, false, false, true,
+            false, false, false, false, false, false, true};
 
             for (int i = 0; i < 17; i++)
-                parser.analize(given[i]);
+                parser.analize(givenTokens[i], givenSpaces[i], givenEndls[i]);
 
             Document document = Program.GetDocument();
             List<UsingStatement> result = document.getListOfUsingStatements();
@@ -238,14 +108,22 @@ namespace TestTranslator
         [Test]
         public void analize_givenUsingStAndNamespace_createdNamespaceInDocument()
         {
-            string[] given = { "using", "System", ".", "Collections", ";",
+            string[] givenTokens = { "using", "System", ".", "Collections", ";",
                 "using", "NUnit", ".", "Framework", ";",
                 "using", "System", ".", "Collections", ".", "Generic", ";",
                 "namespace", "HelloName", ".", "Collections", "{"
             };
+            bool[] givenSpaces = {false, true, false, false, false,
+            false, true, false, false, false,
+            false, true, false, false, false, false, false,
+            false, true, false, false, false,};
+            bool[] givenEndls = { false, false, false, false, true,
+            false, false, false, false, true,
+            false, false, false, false, false, false, true,
+            false, false, false, false, true,};
 
             for (int i = 0; i < 22; i++)
-                parser.analize(given[i]);
+                parser.analize(givenTokens[i], givenSpaces[i], givenEndls[i]);
 
             Document document = Program.GetDocument();
             List<UsingStatement> result = document.getListOfUsingStatements();
@@ -261,10 +139,12 @@ namespace TestTranslator
         [Test]
         public void analize_givenNamespace_createdNamespaceInDocument()
         {
-            string[] given = { "namespace", "Namespace", ".", "Name", "{"};
+            string[] givenToken = { "namespace", "Namespace", ".", "Name", "{"};
+            bool[] givenSpace = { false, true, false, false, false };
+            int numberOfGivenElements = 5;
 
-            for (int i = 0; i < 5; i++)
-                parser.analize(given[i]);
+            for (int i = 0; i < numberOfGivenElements; i++)
+                parser.analize(givenToken[i], givenSpace[i], i == numberOfGivenElements - 1);
 
             Document document = Program.GetDocument();
             string result = document.getNamespaceStatement();
@@ -272,5 +152,139 @@ namespace TestTranslator
             Assert.AreEqual("Namespace.Name", result);
             Assert.AreEqual(ParserState.ExpectedClass, parser.getState());
         }
+    }
+    class ParserTestClasses
+    {
+        Parser parser;
+        [SetUp]
+        public void Setup()
+        {
+            Program.createDocument();
+            parser = new Parser();
+        }
+
+        [Test]
+        public void analize_givenCWPublicWhenExpectedClass_changeState()
+        {
+            parser.changeState(ParserState.ExpectedClass);
+            parser.analize("public", false, false);
+
+            Assert.AreEqual(ParserState.ExpectedCWClass, parser.getState());
+        }
+
+        [Test]
+        public void analize_givenCWClassWhenExpectedClass_changeState()
+        {
+            parser.changeState(ParserState.ExpectedClass);
+            parser.analize("class", true, false);
+
+            Assert.AreEqual(ParserState.FoundCWClassExpectedClassName, parser.getState());
+        }
+        [Test]
+        public void analize_givenCWPublicClassWhenExpectedClass_changeState()
+        {
+            parser.changeState(ParserState.ExpectedClass);
+            parser.analize("public", false, false);
+            parser.analize("class", true, false);
+
+            Assert.AreEqual(ParserState.FoundCWClassExpectedClassName, parser.getState());
+        }
+
+        [Test]
+        public void analize_givenClass_createdClassInDocument()
+        {
+            string[] given = { "public", "class", "ClassName" };
+
+            parser.changeState(ParserState.ExpectedClass);
+            for (int i = 0; i < 3; i++)
+                parser.analize(given[i], true, false);
+
+            Document document = Program.GetDocument();
+            List<Class> resultList = document.getListOfClasses();
+
+            Assert.AreEqual(1, resultList.Count);
+            Assert.AreEqual("ClassName", resultList[0].getName());
+            Assert.AreEqual(ParserState.FoundClassNameExpectedLeftBrace, parser.getState());
+        }
+
+    }
+
+    [TestFixture]
+    class ParserCommentTests
+    {
+        Parser parser;
+        [SetUp]
+        public void Setup()
+        {
+            Program.createDocument();
+            parser = new Parser();
+        }
+
+        [Test]
+        public void getTokenType_oneLineComment_returnTypeComment()
+        {
+            Assert.AreEqual(TokenType.Comment, parser.getTokenType("//"));
+            Assert.AreEqual(TokenType.Comment, parser.getTokenType("/*"));
+        }
+
+        [Test]
+        public void analize_givenUsingWithComment_createdInDoc()
+        {
+            string[] givenToken = { "using", "//" , "this", "is", "comment",
+                "System", ".", "Collections", ";"};
+            bool[] givenSpace = { false, false, true, true, true,
+                true, false, false, false};
+            int numberOfGivenElements = 9;
+            for (int i = 0; i < numberOfGivenElements; i++)
+                parser.analize(givenToken[i], givenSpace[i], i == 4);
+
+
+
+            Document document = Program.GetDocument();
+            List<UsingStatement> result = document.getListOfUsingStatements();
+
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual("System.Collections", result[0].getStatement());
+           
+        }
+
+        [Test]
+        public void analize_givenUsingWithMLComment_createdInDoc()
+        {
+            List<documentUnit> expected = new List<documentUnit>();
+            expected.Add(documentUnit.MultipleLineComment);
+
+            string[] givenToken = { "/*" , "this", "is", "comment",
+                "System", ".", "Collections", "*/"};
+            bool[] givenSpace = { true, true, true, true, true,
+                true, true, true,};
+            int numberOfGivenElements = 8;
+            for (int i = 0; i < numberOfGivenElements; i++)
+                parser.analize(givenToken[i], givenSpace[i], i == 3);
+
+
+
+            Document document = Program.GetDocument();
+            List<documentUnit> result = document.getDocumentStructure();
+
+            CollectionAssert.AreEqual(expected, result);
+            //Assert.True(true);
+
+        }
+
+        [Test]
+        public void analize_givenUsingWithMLComment_changeState()
+        {
+            parser.changeState(ParserState.ExpectedClass);
+            parser.analize("/*", true, true);
+
+            Assert.AreEqual(ParserState.MultipleLineComment, parser.getState());
+
+            parser.analize("*/", true, true);
+            Assert.AreEqual(ParserState.ExpectedClass, parser.getState());
+        }
+
+
+
     }
 }
