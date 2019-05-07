@@ -9,11 +9,15 @@ namespace TestTranslator
         private NamespaseStatement namespaseStatement;
 
         private List<Class> listOfClasses;
+        private List<TestMethod> testMethods;
 
         private List<documentUnit> documentStructure;
 
         private List<OneLineComment> oneLineComments;
         private List<MultipleLineComment> multipleLineComments;
+
+        private List<string> listOfCodeLines;
+        private List<Assertion> assertions;
 
 
         public Document()
@@ -22,6 +26,9 @@ namespace TestTranslator
             //namespaseStatement = new NamespaseStatement("");
             listOfClasses = new List<Class>();
             documentStructure = new List<documentUnit>();
+            listOfCodeLines = new List<string>();
+            testMethods = new List<TestMethod>();
+            assertions = new List<Assertion>();
 
             oneLineComments = new List<OneLineComment>();
             multipleLineComments = new List<MultipleLineComment>();
@@ -54,10 +61,11 @@ namespace TestTranslator
             return listOfClasses;
         }
 
-        public void addClass(string className)
+        public void addClass(string className, List<Attribute> listOfAttributes)
         {
-            Class newClass = new Class(className);
+            Class newClass = new Class(className, listOfAttributes);
             listOfClasses.Add(newClass);
+            documentStructure.Add(documentUnit.ClassDeclaration);
         }
 
         public void addComment(string comment, bool isAfterCode)
@@ -92,5 +100,47 @@ namespace TestTranslator
         {
             return multipleLineComments;
         }
+
+        public void addCodeLine(string line)
+        {
+            listOfCodeLines.Add(line);
+            documentStructure.Add(documentUnit.CodeLineInClass);
+        }
+
+        public List<string> getListOfCodeLines()
+        {
+            return listOfCodeLines;
+        }
+
+        public void addToStructure(documentUnit unit)
+        {
+            documentStructure.Add(unit);
+        }
+
+        public void AddTestMethod(TestMethod tm)
+        {
+            testMethods.Add(tm);
+            addToStructure(documentUnit.TestMethodDeclaration);
+        }
+
+        public List<TestMethod> GetTestMethods()
+        {
+            return testMethods;
+        }
+
+        public void AddAssertion(Assertion assertion)
+        {
+            addToStructure(documentUnit.Assertion);
+            assertions.Add(assertion);
+            if (!assertion.translatable())
+                testMethods[testMethods.Count - 1].ToComment();
+        }
+        public List<Assertion> GetAssertions()
+        {
+            return assertions;
+        }
+
     }
+
+
 }

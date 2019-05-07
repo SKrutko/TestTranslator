@@ -9,14 +9,35 @@ namespace TestTranslator
     public class Class
     {
         private string name;
+        private List<Attribute>listOfAttributes;
+        bool commented = false;
 
         public Class(string className)
         {
             name = className;
+            listOfAttributes = new List<Attribute>();
+        }
+        public Class(string className, List<Attribute> listOfAttributes)
+        {
+            name = className;
+            this.listOfAttributes = listOfAttributes;
+
         }
         public string getName()
         {
             return name;
         }
+
+        public List<Attribute> getListOfAttributes()
+        {
+            return listOfAttributes;
+        }
+
+        public bool IsCommented()
+        {
+            return commented;
+        }
+
+        
     }
 }

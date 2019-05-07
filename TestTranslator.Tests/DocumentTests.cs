@@ -1,8 +1,10 @@
-﻿using System;
+﻿using System; // one line comment
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
-
+/* multiple
+ * line
+ * comment*/
 namespace TestTranslator
 {
     public class DocumentTests

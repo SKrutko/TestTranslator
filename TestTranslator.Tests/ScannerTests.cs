@@ -187,5 +187,30 @@ namespace TestTranslator
 
             CollectionAssert.AreEqual(expected, result);
         }
+
+        [Test]
+        public void getListOfTokens_givenSpecialChar_returnList3()
+        {
+            string given = "            expected.Add(\"    public class CodeGeneratorTests\");";
+            List<scannerResponse> expected = new List<scannerResponse>();
+            expected.Add(new scannerResponse("expected", true));
+            expected.Add(new scannerResponse(".", false));
+            expected.Add(new scannerResponse("Add", false));
+            expected.Add(new scannerResponse("(", false));
+            expected.Add(new scannerResponse("\"", false));
+            expected.Add(new scannerResponse("public", true));
+            expected.Add(new scannerResponse("class", true));
+            expected.Add(new scannerResponse("CodeGeneratorTests", true));
+            expected.Add(new scannerResponse("\"", false));
+            expected.Add(new scannerResponse(")", false));
+            expected.Add(new scannerResponse(";", false));
+
+
+
+
+            List<scannerResponse> result = scanner.getListOfTokens(given);
+            Assert.AreEqual("CodeGeneratorTests", result[7].token);
+            CollectionAssert.AreEqual(expected, result);
+        }
     }
 }

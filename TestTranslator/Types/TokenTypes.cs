@@ -4,8 +4,17 @@
     {
         Using,
         Namespace,
-        ClassAttribute,
-        Attribute,
+
+        ClassAttributeWithArg,
+        ClassAttributeWithoutArg,
+
+        TestAttributeWithArg,
+        TestAttributeWithoutArg,
+
+        AttributeWithArg,
+        AttributeWithoutArg,
+
+        ReturnType,
         Assertion,
         NonToken,
         Comment
@@ -15,14 +24,26 @@
     {
         Using,
         Namespace,
-        ClassAttribute,
-        Attribute,
         Assertion,
         NonToken,
+
+        ClassAttributeWithArgs,
+        ClassAttributeWithoutArgs,
+        TestAttributeWithArgs,
+        TestAttributeWithoutArgs,
+
+        ClassDeclaration,
+
+        TestMethodDeclaration,
+
+
         OneLineComment,
         OneLineCommentAfterCode,
         MultipleLineComment,
         MultipleLineCommentAfterCode,
+
+        CodeLineInClass,
+        CodeLineInMethod
     }
 
     public enum ParserState
@@ -32,14 +53,44 @@
         FoundNamespaceExpectedName,
         FoundnamespaceNameExpectedLeftBrace, //expected {
         ExpectedClass,
-        ExpectedCWClass,//Code Word
+
+        ExpectedClassAttribute,
+        FoundClassAttrExpectedRightBracketOrComma,
+        FoundClassAttrExpectedLeftParenthesis,
+        FoundClassAttrExpectedRightParenthesis,
+
+        ExpectedCWClass,//CW stands forCode Word
         FoundCWClassExpectedClassName,
         FoundClassNameExpectedLeftBrace,
+        ExpectedCodeLineOrTestMethod,
+        ExpectedContinuationOfCode,
+
+        ExpectedTestAttribute,
+        FoundTestAttrExpectedRightBracketOrComma,
+        FoundTestAttrExpectedLeftParenthesis,
+        FoundTestAttrExpectedRightParenthesis,
+
+        FoundCWPublicExpectedReturnType,
+        FoundReturnTypeExpectedMethodName,
+        FoundMethodNameExpectedLeftParenthesis,
+        FoundMethodDeclarationExpectedRightParenthesis,
+        FoundMethodDeclarationExpectedLeftBrace,
+        ExpectedCodeLineOrAssertion,
+
+        FoundAssertionExpectedDot,
+        FoundAssertionExpectedMethod, //found cw assert, collectionAssert or other
+        FoundAssertionExpectedLeftParenthesis,//found method expected (
+        FoundAssertionExpectedRightParenthesis,//found (, expected ), everything in between is seen as arguments
+        FoundAssertionExpectedEndl,// expected ;
+
+
+
 
         OneLineComment,
         MultipleLineComment,
 
-        Error
+        Error,
+        ExpectedTestMethod
     }
 
     public struct scannerResponse // used in scanner to give information if there is space BEFORE the token

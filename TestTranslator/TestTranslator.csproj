@@ -47,6 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controller\MainFormController.cs" />
+    <Compile Include="TestStructure\Assertion.cs" />
+    <Compile Include="TestStructure\Attribute.cs" />
     <Compile Include="TestStructure\Class.cs" />
     <Compile Include="TestStructure\Comment.cs" />
     <Compile Include="TestStructure\Document.cs" />
@@ -58,8 +60,10 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="readFile\Parser.cs" />
-    <Compile Include="readFile\Scanner.cs" />
+    <Compile Include="TestStructure\TestMethod.cs" />
+    <Compile Include="Translator\CodeGenerator.cs" />
+    <Compile Include="Translator\Parser.cs" />
+    <Compile Include="Translator\Scanner.cs" />
     <Compile Include="TestStructure\NamespaseStatement.cs" />
     <Compile Include="TestStructure\UsingStatement.cs" />
     <Compile Include="Types\TokenTypes.cs" />

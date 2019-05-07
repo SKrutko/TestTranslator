@@ -39,14 +39,14 @@ namespace TestTranslator
             Assert.AreEqual(TokenType.Namespace, result);
         }
 
+
         [Test]
-        public void getTokenType_givenTest_returnsTypeAttribute()
+        public void getTokenType_givenClassAttrWithotArg_returnsClassAttributeWithoutArg()
         {
-            TokenType result = parser.getTokenType("Test");
-            Assert.AreEqual(TokenType.Attribute, result);
+            Assert.AreEqual(TokenType.ClassAttributeWithoutArg, parser.getTokenType("TestFixture"));
         }
 
-       
+
     }
 
     public class ParseTest
@@ -152,6 +152,30 @@ namespace TestTranslator
             Assert.AreEqual("Namespace.Name", result);
             Assert.AreEqual(ParserState.ExpectedClass, parser.getState());
         }
+
+        public void analize_givenCommentCharInString_detectedAsString() //???
+        {
+            parser.changeState(ParserState.ExpectedCodeLineOrTestMethod);
+
+            List<documentUnit> expected = new List<documentUnit>();
+            expected.Add(documentUnit.CodeLineInClass);
+            
+            string[] givenToken = { "string", "s", "=", "\"", "/*", "something", "*/", "\"", ";" }; //string s = "/* something */";
+        
+            bool[] givenSpace = { false, true, true, true, false, true, true, false, false };
+            int numberOfGivenElements = 9;
+            for (int i = 0; i < numberOfGivenElements - 2; i++)
+                parser.analize(givenToken[i], givenSpace[i], i == numberOfGivenElements);
+
+            Assert.AreEqual(ParserState.ExpectedContinuationOfCode, parser.getState());
+            parser.analize(givenToken[7], givenSpace[7], 7 == numberOfGivenElements);
+            parser.analize(givenToken[8], givenSpace[8], 8 == numberOfGivenElements);
+
+            Document document = Program.GetDocument();
+            List<documentUnit> result = document.getDocumentStructure();
+
+            CollectionAssert.AreEqual(expected, result);
+        }
     }
     class ParserTestClasses
     {
@@ -207,7 +231,200 @@ namespace TestTranslator
             Assert.AreEqual(ParserState.FoundClassNameExpectedLeftBrace, parser.getState());
         }
 
+        [Test]
+        public void analize_givenClassAttribute_createdClassWithAttributeInDocument()
+        {
+            string[] given = { "[", "TestFixture", "]", "public", "class", "ClassName" };
+
+            parser.changeState(ParserState.ExpectedClass);
+
+            parser.analize(given[0], true, false);
+            Assert.AreEqual(ParserState.ExpectedClassAttribute, parser.getState());
+            parser.analize(given[1], true, false);
+            Assert.AreEqual(ParserState.FoundClassAttrExpectedRightBracketOrComma, parser.getState());
+            parser.analize(given[2], true, true);
+            Assert.AreEqual(ParserState.ExpectedClass, parser.getState());
+
+            parser.analize(given[3], true, false);
+            parser.analize(given[4], true, false);
+            parser.analize(given[5], true, true);
+
+            Document document = Program.GetDocument();
+            List<Attribute> result = document.getListOfClasses()[0].getListOfAttributes();
+
+            Assert.AreEqual("TestClass", result[0].getKeyWord());
+        }
+        [Test]
+        public void analize_givenCodeLineInClass_addedToDoc()
+        {
+            string[] givenToken = { "parser", ".", "analize", "(" , "given", ")", ";" };
+            bool[] givenSpace = { false, false, false, false, true, true, false };
+            bool[] givenEndl = { false, false, false, false, false, false, true };
+
+            parser.changeState(ParserState.ExpectedCodeLineOrTestMethod);
+
+            for(int i = 0; i < 7; i++)
+            {
+                parser.analize(givenToken[i], givenSpace[i], givenEndl[i]);
+            }
+
+            Document document = Program.GetDocument();
+            
+            Assert.AreEqual(documentUnit.CodeLineInClass, document.getDocumentStructure()[0]);
+            Assert.AreEqual(1, document.getListOfCodeLines().Count);
+            Assert.AreEqual("parser.analize( given );", document.getListOfCodeLines()[0]);
+        }
+
+        [Test]
+        public void analize_givenTwoCodeLineInClass_addedBothToDoc()
+        {
+            string[] givenToken = { "parser", ".", "analize", "(", "given", ")", ";",
+            "parser", ".", "changeState", "(", ")", ";"
+        };
+            bool[] givenSpace = { false, false, false, false, true, true, false,
+            false, false, false, false, false, false,};
+            bool[] givenEndl = { false, false, false, false, false, false, true,
+            false, false, false, false, false, true};
+
+            parser.changeState(ParserState.ExpectedCodeLineOrTestMethod);
+
+            for (int i = 0; i < 13; i++)
+            {
+                parser.analize(givenToken[i], givenSpace[i], givenEndl[i]);
+            }
+
+            Document document = Program.GetDocument();
+
+            Assert.AreEqual(documentUnit.CodeLineInClass, document.getDocumentStructure()[0]);
+            Assert.AreEqual(documentUnit.CodeLineInClass, document.getDocumentStructure()[1]);
+            Assert.AreEqual(2, document.getListOfCodeLines().Count);
+            Assert.AreEqual("parser.analize( given );", document.getListOfCodeLines()[0]);
+            Assert.AreEqual("parser.changeState();", document.getListOfCodeLines()[1]);
+
+        }
+
+        [Test]
+        public void analize_givenTestMethod_createdTestMethodInDocument()
+        {
+            string[] givenToken = { "[", "SetUp", "]",
+                "public", "void", "SetupMethod", "(", ")",
+                "{",
+                "}",
+                "[", "Test", "]",
+                "public", "void", "TestMethod", "(", ")",
+                "{",
+                "}" };
+            bool[] givenSpace = { false, false, false,
+                false, true, true, false, false,
+                false,
+                false,
+                false, false, false,
+                false, true, true, false, false,
+                false,
+                false};
+            bool[] givenEndl = { false, false, true,
+                false, false, false, false, true,
+                true,
+                true,
+                false, false, true,
+                false, false, false, false, true,
+                true,
+                true};
+
+            parser.changeState(ParserState.ExpectedCodeLineOrTestMethod);
+
+            for (int i = 0; i < 20; i++)
+            {
+                parser.analize(givenToken[i], givenSpace[i], givenEndl[i]);
+            }
+
+            Document document = Program.GetDocument();
+
+            List<documentUnit> expectedStructure = new List<documentUnit>();
+            expectedStructure.Add(documentUnit.TestAttributeWithoutArgs);
+            expectedStructure.Add(documentUnit.TestMethodDeclaration);
+            expectedStructure.Add(documentUnit.TestAttributeWithoutArgs);
+            expectedStructure.Add(documentUnit.TestMethodDeclaration);
+
+            List<TestMethod> result =  document.GetTestMethods();
+
+            List<Attribute> attr1 = new List<Attribute>();
+            attr1.Add(new Attribute(AttributeType.TestAttribute, "SetUp"));
+
+            TestMethod tm1 = new TestMethod("void", attr1);
+            tm1.AddArgs("");
+            tm1.SetName("SetupMethod");
+
+            List<Attribute> attr2 = new List<Attribute>();
+            attr2.Add(new Attribute(AttributeType.TestAttribute, "Test"));
+
+            TestMethod tm2 = new TestMethod("void", attr2);
+            tm2.AddArgs("");
+            tm2.SetName("TestMethod");
+
+            List<TestMethod> expected = new List<TestMethod>();
+            expected.Add(tm1);
+            expected.Add(tm2);
+
+
+
+            CollectionAssert.AreEqual(expectedStructure, document.getDocumentStructure() );
+
+            Assert.AreEqual("TestInitialize", result[0].getListOfAttributes()[0].getKeyWord());
+            Assert.AreEqual("TestCase", result[1].getListOfAttributes()[0].getKeyWord());
+
+            Assert.AreEqual(AttributeType.TestAttribute, result[0].getListOfAttributes()[0].getType());
+
+           // CollectionAssert.AreEqual(attr1, result[0].getListOfAttributes());
+            //CollectionAssert.AreEqual(attr2, result[1].getListOfAttributes());
+
+            //CollectionAssert.AreEqual(expected, result);
+        }
+        [Test]
+        public void analize_stringMode()
+        {
+            parser.changeState(ParserState.ExpectedContinuationOfCode);
+
+            string[] givenToken = { "analize", "(", "\"", "heloo", "\"", ")", ";" };
+            bool[] givenSpace = { false, false, false, false, false, false, false };
+            bool[] givenEndl = { false, false, false, false, false, false, true };
+
+            bool[] expectedStringMode = { false, false, true, true, false, false, false };
+
+            for (int i = 0; i < 7; i++)
+            {
+                parser.analize(givenToken[i], givenSpace[i], givenEndl[i]);
+                Assert.AreEqual(expectedStringMode[i], parser.GetStringMode());
+            }
+        }
+
+        [Test]
+        public void analize_EndlInString()
+        {
+            parser.changeState(ParserState.ExpectedContinuationOfCode);
+
+            string[] givenToken = { "analize", "(", "\"", ";", "\"", ")", ";" };
+            bool[] givenSpace = { false, false, false, false, false, false, false };
+            bool[] givenEndl = { false, false, false, false, false, false, true };
+
+            string expectedLine = "analize(\";\");";
+            Document document = Program.GetDocument();
+
+
+            for (int i = 0; i < 7; i++)
+            {
+                parser.analize(givenToken[i], givenSpace[i], givenEndl[i]);
+            }
+
+            List<string> expected = new List<string>();
+            expected.Add(expectedLine);
+            CollectionAssert.AreEqual(expected, document.getListOfCodeLines());
+
+        }
+
+
     }
+    
 
     [TestFixture]
     class ParserCommentTests
@@ -268,7 +485,7 @@ namespace TestTranslator
             List<documentUnit> result = document.getDocumentStructure();
 
             CollectionAssert.AreEqual(expected, result);
-            //Assert.True(true);
+
 
         }
 
@@ -284,7 +501,8 @@ namespace TestTranslator
             Assert.AreEqual(ParserState.ExpectedClass, parser.getState());
         }
 
-
+        
 
     }
-}
+
+    }

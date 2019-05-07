@@ -69,6 +69,8 @@ namespace TestTranslator
             specialSingleCharacters.Add('=');
             specialSingleCharacters.Add('[');
             specialSingleCharacters.Add(']');
+            specialSingleCharacters.Add('"');
+
 
             specialDoubleCharacters = new List<char>();
             specialDoubleCharacters.Add('/');
