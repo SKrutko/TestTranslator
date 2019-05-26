@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTranslator", "TestTranslator\TestTranslator.csproj", "{6017D70E-3BE4-4F35-AAC5-B52EE21F2D79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTranslator.Tests", "TestTranslator.Tests\TestTranslator.Tests.csproj", "{4E5D453C-FC96-49DB-BD54-015EC8C3EAC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestTranslator.Tests", "TestTranslator.Tests\TestTranslator.Tests.csproj", "{4E5D453C-FC96-49DB-BD54-015EC8C3EAC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTranslatorMSTest", "TestTranslatorMSTest\TestTranslatorMSTest.csproj", "{EC99A1E6-6984-4132-976F-DC01F8D96275}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{4E5D453C-FC96-49DB-BD54-015EC8C3EAC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E5D453C-FC96-49DB-BD54-015EC8C3EAC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E5D453C-FC96-49DB-BD54-015EC8C3EAC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC99A1E6-6984-4132-976F-DC01F8D96275}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC99A1E6-6984-4132-976F-DC01F8D96275}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC99A1E6-6984-4132-976F-DC01F8D96275}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC99A1E6-6984-4132-976F-DC01F8D96275}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

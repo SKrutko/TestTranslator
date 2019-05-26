@@ -13,6 +13,7 @@ namespace TestTranslator
 {
     public partial class FormMain : Form
     {
+        private List<string> resultList;
         public FormMain()
         {
             InitializeComponent();
@@ -25,6 +26,10 @@ namespace TestTranslator
             openFileDialog.Filter = "test files (*.cs)|*.cs";
             openFileDialog.InitialDirectory = @"C:\";
             openFileDialog.Title = "Please select a NUnit test file.";
+
+            saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.InitialDirectory = @"C:\";
+
         }
 
         private void btnLoadFile_Click(object sender, EventArgs e)
@@ -40,6 +45,28 @@ namespace TestTranslator
         public void print(string line)
         {
             rtbMain.Text +=  line + "\n";
+        }
+        public void EnableButtonSave()
+        {
+            btnSave.Enabled = true;
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog(this) == DialogResult.OK)
+            {
+                string filePath = saveFileDialog1.FileName;
+                System.IO.File.WriteAllLines(filePath, resultList);
+            }
+        }
+
+        private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+
+        }
+        public void SetResultList(List<string> list)
+        {
+            resultList = list;
         }
     }
 }

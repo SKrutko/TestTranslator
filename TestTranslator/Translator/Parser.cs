@@ -9,10 +9,20 @@ namespace TestTranslator
 {
     public class Parser
     {
+        //TODO: delete tmp
+        //temporary
+        List<string> tokens;
+        List<bool> spaces;
+        List<bool> endlines;
+        //temporary
+
+
         private ParserState state;
         private ParserState prevState;
         private Dictionary<string, TokenType> keyWords;
         static Document document;
+
+        private bool foundNUnit = false;
 
         private string usingDirective = "";
         private string namespaceName = "";
@@ -25,12 +35,13 @@ namespace TestTranslator
         private bool commentIsAfterCode = false;
 
         private List<Attribute> listOfAttributes;
+        private string attributeArgs = "";
         private string lineOfCode = "";
 
         private TestMethod nextMethod;
         private string methodArgs = "";
 
-       private Assertion newAssertion;
+        private Assertion newAssertion;
         private string assertionArgs;
 
         int leftParenthesises = 0;
@@ -45,10 +56,17 @@ namespace TestTranslator
             document = Program.GetDocument();
 
             listOfAttributes = new List<Attribute>();
+
+            tokens = new List<string>();
+            spaces = new List<bool>();
+            endlines = new List<bool>();
         }
 
         public void parse(string token, bool space, bool endl)
         {
+            tokens.Add(token);
+            spaces.Add(space);
+            endlines.Add(endl);
             try
             {
                 analize(token, space, endl);
@@ -80,36 +98,45 @@ namespace TestTranslator
                     changeState(ParserState.MultipleLineComment);
                     oneLineComment = "";
                     commentIsAfterCode = !newLine;
+                    multipleLineComment = new List<string>();
                 }
             }
             else switch (state)
             {
-                case ParserState.OneLineComment:
-                     doIfOneLineComment(nextToken, space, endl);
-                     break;
+                    case ParserState.OneLineComment:
+                         doIfOneLineComment(nextToken, space, endl);
+                         break;
 
-               case ParserState.MultipleLineComment:
-                    doIfMultipleLineComment(nextToken, space, endl);
-                    break;
+                   case ParserState.MultipleLineComment:
+                        doIfMultipleLineComment(nextToken, space, endl);
+                        break;
 
                     case ParserState.ExpectedUsingStatementOrNamespace:
-                    doIfExpectedUsingStatementOrNamespace(nextToken);
-                    break;
+                        doIfExpectedUsingStatementOrNamespace(nextToken);
+                        break;
 
-                case ParserState.FoundUsingExpectedDirectoryName:
-                    doIfFoundUsingExpectedDirectoryName(nextToken);
-                    break;
+                    case ParserState.FoundUsingExpectedDirectoryName:
+                        doIfFoundUsingExpectedDirectoryName(nextToken);
+                        break;
 
-                case ParserState.FoundNamespaceExpectedName:
-                    doIfFoundNamespaceExpectedName(nextToken);
-                    break;
+                    case ParserState.FoundNamespaceExpectedName:
+                        doIfFoundNamespaceExpectedName(nextToken);
+                        break;
 
-                case ParserState.ExpectedClass:
-                    doIfExpectedClass(nextToken);
-                    break;
+                    case ParserState.ExpectedClass:
+                        doIfExpectedClass(nextToken);
+                        break;
 
                     case ParserState.ExpectedClassAttribute:
                         doIfExpectedClassAttribute(nextToken);
+                        break;
+
+                    case ParserState.FoundClassAttrExpectedLeftParenthesis:
+                        doIfFoundClassAttrExpectedLeftParenthesis(nextToken);
+                        break;
+
+                    case ParserState.FoundClassAttrExpectedRightParenthesis:
+                        doIfFoundAttrWithArgsExpectedRightParenthesis(nextToken, space);
                         break;
 
                     case ParserState.FoundClassAttrExpectedRightBracketOrComma:
@@ -117,12 +144,12 @@ namespace TestTranslator
                         break;
 
                     case ParserState.ExpectedCWClass:
-                    doIfExpectedCWClass(nextToken);
-                    break;
+                        doIfExpectedCWClass(nextToken);
+                        break;
 
-                case ParserState.FoundCWClassExpectedClassName:
-                    doIfFoundCWClassExpectedClassName(nextToken);
-                    break;
+                    case ParserState.FoundCWClassExpectedClassName:
+                        doIfFoundCWClassExpectedClassName(nextToken);
+                        break;
 
                     case ParserState.FoundClassNameExpectedLeftBrace:
                         doIfFoundClassNameExpectedLeftBrace(nextToken);
@@ -134,6 +161,14 @@ namespace TestTranslator
 
                     case ParserState.ExpectedTestAttribute:
                         doIfExpectedTestAttribute(nextToken);
+                        break;
+
+                    case ParserState.FoundTestAttrExpectedLeftParenthesis:
+                        doIfFoundTestAttrExpectedLeftParenthesis(nextToken);
+                        break;
+
+                    case ParserState.FoundTestAttrExpectedRightParenthesis:
+                        doIfFoundAttrWithArgsExpectedRightParenthesis(nextToken, space);
                         break;
 
                     case ParserState.FoundTestAttrExpectedRightBracketOrComma:
@@ -180,9 +215,11 @@ namespace TestTranslator
                     case ParserState.FoundAssertionExpectedLeftParenthesis:
                         doIfFoundAssertionExpectedLeftParenthesis(nextToken);
                         break;
+
                     case ParserState.FoundAssertionExpectedRightParenthesis:
                         doIfFoundAssertionExpectedRightParenthesis(nextToken, space);
                         break;
+
                     case ParserState.FoundAssertionExpectedEndl:
                         doIfFoundAssertionExpectedEndl(nextToken);
                         break;
@@ -216,6 +253,7 @@ namespace TestTranslator
         {
             if (nextToken.Equals("*/"))
             {
+                multipleLineComment.Add(oneLineComment);
                     changeState(prevState);
                     document.addComment(multipleLineComment, commentIsAfterCode);
             }
@@ -240,7 +278,13 @@ namespace TestTranslator
             }
             else if (getTokenType(nextToken) == TokenType.Namespace)
             {
-                state = ParserState.FoundNamespaceExpectedName;
+                if(!foundNUnit)
+                {
+                    changeState(ParserState.Error);
+                    errorMessage = "Statement \"using NUnit.Framework;\" was not found.";
+                }
+                else
+                    state = ParserState.FoundNamespaceExpectedName;
             }
         }
         private void doIfFoundUsingExpectedDirectoryName(string nextToken)
@@ -252,6 +296,8 @@ namespace TestTranslator
                 state = ParserState.ExpectedUsingStatementOrNamespace;
                 if (!usingDirective.Equals("NUnit.Framework"))
                     document.addUsingStatement(usingDirective);
+                else
+                    foundNUnit = true;
             }
         }
         private void doIfFoundNamespaceExpectedName(string nextToken)
@@ -298,20 +344,71 @@ namespace TestTranslator
 
         private void doIfExpectedClassAttribute(string nextToken) 
         {
-            if(getTokenType(nextToken) == TokenType.ClassAttributeWithoutArg)
+            if(getTokenType(nextToken) == TokenType.ClassAttributeWithoutArg || getTokenType(nextToken) == TokenType.AttributeWithoutArg)
             {
                 changeState(ParserState.FoundClassAttrExpectedRightBracketOrComma);
+                if (!nextToken.Equals("TestFixture"))
+                {
+                    listOfAttributes.Add(new Attribute(AttributeType.ClassAttribute, nextToken));
+                    document.addToStructure(documentUnit.ClassAttributeWithoutArgs);
+                }
+            }
+            else if (getTokenType(nextToken) == TokenType.ClassAttributeWithArg || getTokenType(nextToken) == TokenType.AttributeWithArg)
+            {
+                changeState(ParserState.FoundClassAttrExpectedLeftParenthesis);
                 listOfAttributes.Add(new Attribute(AttributeType.ClassAttribute, nextToken));
-                document.addToStructure(documentUnit.ClassAttributeWithoutArgs);
+                document.addToStructure(documentUnit.ClassAttributeWithArgs);
             }
             else
             {
-                changeState(ParserState.FoundClassAttrExpectedRightParenthesis);
-                document.addToStructure(documentUnit.ClassAttributeWithArgs);
+                changeState(ParserState.Error);
+                errorMessage = "Unknown class attribute: " + nextToken;
             }
-
-            
         }
+
+        private void doIfFoundClassAttrExpectedLeftParenthesis(string nextToken)
+        {
+            if(nextToken.Equals("("))
+            {
+                prevState = ParserState.FoundClassAttrExpectedRightBracketOrComma;
+                changeState(ParserState.FoundClassAttrExpectedRightParenthesis);
+            }
+            else
+            {
+                changeState(ParserState.Error);
+                errorMessage = "Expected left parenthesis after class attribute but found " + nextToken;
+            }
+        }
+
+        private void doIfFoundAttrWithArgsExpectedRightParenthesis(string nextToken, bool space)
+        {
+            if(nextToken.Equals(")"))
+            {
+                if (leftParenthesises == 0)
+                {
+                    changeState(prevState);
+                    listOfAttributes[listOfAttributes.Count - 1].SetArguments(attributeArgs);
+                    attributeArgs = "";
+                }
+                else {
+                    leftParenthesises--;
+                    if (space)
+                        attributeArgs += " ";
+                    attributeArgs += nextToken;
+                }
+            }
+           else
+            {
+                if (nextToken.Equals("("))
+                {
+                    leftParenthesises++;
+                }
+                if (space)
+                    attributeArgs += " ";
+                attributeArgs += nextToken;
+            }
+        }
+
 
         private void doIfFoundClassAttrExpectedRightBracketOrComma(string nextToken)
         {
@@ -344,6 +441,7 @@ namespace TestTranslator
         private void doIfFoundCWClassExpectedClassName(string nextToken)
         {
             document.addClass(nextToken, listOfAttributes);
+            listOfAttributes = new List<Attribute>();
             changeState(ParserState.FoundClassNameExpectedLeftBrace);
         }
 
@@ -378,18 +476,38 @@ namespace TestTranslator
 
         private void doIfExpectedTestAttribute(string nextToken)
         {
-            if (getTokenType(nextToken) == TokenType.TestAttributeWithoutArg)
+            if (getTokenType(nextToken) == TokenType.TestAttributeWithoutArg || getTokenType(nextToken) == TokenType.AttributeWithoutArg)
             {
                 changeState(ParserState.FoundTestAttrExpectedRightBracketOrComma);
                 Attribute newAttr = new Attribute(AttributeType.TestAttribute, nextToken);
                 listOfAttributes.Add(newAttr);
                 document.addToStructure(documentUnit.TestAttributeWithoutArgs);
             }
+            else if (getTokenType(nextToken) == TokenType.TestAttributeWithArg || getTokenType(nextToken) == TokenType.AttributeWithArg)
+            {
+                changeState(ParserState.FoundTestAttrExpectedLeftParenthesis);
+                document.addToStructure(documentUnit.TestAttributeWithArgs);
+                listOfAttributes.Add(new Attribute(AttributeType.TestAttribute, nextToken));
+            }
             else
             {
+                changeState(ParserState.Error);
+                errorMessage = " Unknown test attribute: " + nextToken;
+            }
+        }
+
+        private void doIfFoundTestAttrExpectedLeftParenthesis(string nextToken)
+        {
+            if (nextToken.Equals("("))
+            {
+                prevState = ParserState.FoundTestAttrExpectedRightBracketOrComma;
                 changeState(ParserState.FoundTestAttrExpectedRightParenthesis);
-                document.addToStructure(documentUnit.TestAttributeWithArgs);
-                //TODO?
+                leftParenthesises = 0;
+            }
+            else
+            {
+                changeState(ParserState.Error);
+                errorMessage = "Expected left parenthesis after test attribute but found: " + nextToken;
             }
         }
 
@@ -416,6 +534,10 @@ namespace TestTranslator
             {
                 changeState(ParserState.FoundCWPublicExpectedReturnType);
             }
+            else if(nextToken.Equals("["))
+            {
+                changeState(ParserState.ExpectedTestAttribute);
+            }
             else
             {
                 changeState(ParserState.Error);
@@ -431,7 +553,7 @@ namespace TestTranslator
                
                 changeState(ParserState.FoundReturnTypeExpectedMethodName);
                 nextMethod = new TestMethod(nextToken, listOfAttributes);
-                listOfAttributes.Clear();
+                listOfAttributes = new List<Attribute>();
             }
             else
             {
@@ -457,12 +579,10 @@ namespace TestTranslator
         {
             if (nextToken.Equals(")"))
             {
-
                 changeState(ParserState.FoundMethodDeclarationExpectedLeftBrace);
                 nextMethod.AddArgs(methodArgs);
                 methodArgs = "";
                 document.AddTestMethod(nextMethod);
-                
             }
             else
             {
@@ -544,11 +664,15 @@ namespace TestTranslator
                     document.AddAssertion(newAssertion);
                 }
                 else
+                {
                     leftParenthesises--;
+                    assertionArgs += ")";
+                }
             }
             else if(nextToken.Equals("("))
             {
                 leftParenthesises++;
+                assertionArgs += "(";
             }
             else
             {
@@ -607,72 +731,10 @@ namespace TestTranslator
             */
             if (getState() != ParserState.Error)
             {
-                /* //for (int i = 0; i < u singStatements.Count; i++)
-                 //{
-                 //    formMain.print("using statement: " + usingStatements[i].getStatement());
-                 //}
-                 //formMain.print("namespace name:" + document.getNamespaceStatement());
-                 string nextLine = "document structure size is " + document.getDocumentStructure().Count;
-                 int i = 0, olci = 0, mlci = 0, codeLinesIndex = 0;
-
-                 foreach (documentUnit du in document.getDocumentStructure())
-                 {
-                     formMain.print(du.ToString());
-                 }
-                 formMain.print("---end of stucture---");
-
-                 foreach (documentUnit du in document.getDocumentStructure())
-                 {
-                     switch (du)
-                     {
-                         case documentUnit.Using:
-                             formMain.print(nextLine);
-                             nextLine = "using statement: " + usingStatements[i++].getStatement();
-                             break;
-                         case documentUnit.Namespace:
-                             formMain.print(nextLine);
-                             nextLine = "namespace: " + document.getNamespaceStatement();
-                             break;
-                         case documentUnit.OneLineCommentAfterCode:
-                             nextLine += " //" + onelineComments[olci++].getMessage();
-                             break;
-                         case documentUnit.OneLineComment:
-                             formMain.print(nextLine);
-                             nextLine = " //" + onelineComments[olci++].getMessage();
-                             break;
-                         case documentUnit.MultipleLineComment:
-                             formMain.print(nextLine);
-                             nextLine = "/* " + document.getListOfMultipleLineComments()[mlci++];
-                             for (int k = 0; k < document.getListOfMultipleLineComments()[mlci].getMessage().Count; k++)
-                             {
-                                 formMain.print(nextLine);
-                                 nextLine = document.getListOfMultipleLineComments()[mlci].getMessage()[k];
-                             }
-                            */// nextLine += " */";
-                              /* break;
-                           case documentUnit.MultipleLineCommentAfterCode:
-                               //formMain.print(nextLine);
-                               nextLine += " /* " + document.getListOfMultipleLineComments()[mlci++];
-                               for (int k = 0; k < document.getListOfMultipleLineComments()[mlci].getMessage().Count; k++)
-                               {
-                                   formMain.print(nextLine);
-                                   nextLine = document.getListOfMultipleLineComments()[mlci].getMessage()[k];
-                               }
-                            *///   nextLine += " */";
-                              /* break;
-                           case documentUnit.CodeLine:
-                               formMain.print(nextLine);
-                               nextLine = listOfCodeLines[codeLinesIndex++];
-                               break;
-                           default:
-                               formMain.print(nextLine);
-                               nextLine += "other";
-                               break;
-
-                       }
-
-                   }
-                   formMain.print(nextLine);*/
+               /* for(int i = 0; i < tokens.Count; i++)
+                {
+                    formMain.print(tokens[i] + ", " + spaces[i] + ", " + endlines[i]);
+                }*/
                 CodeGenerator cg = new CodeGenerator();
                 cg.Generate(document);
 
@@ -705,12 +767,18 @@ namespace TestTranslator
             keyWords.Add("TestFixture", TokenType.ClassAttributeWithoutArg);
             keyWords.Add("SetUpFixture", TokenType.ClassAttributeWithoutArg);
 
+            //keyWords.Add("", TokenType.ClassAttributeWithArg);
+
             keyWords.Add("Parallelizable", TokenType.AttributeWithoutArg);
             keyWords.Add("RequiresThread", TokenType.AttributeWithoutArg);
             keyWords.Add("Culture", TokenType.AttributeWithoutArg);
             keyWords.Add("Explicit", TokenType.AttributeWithoutArg);
             keyWords.Add("NonParallelizable", TokenType.AttributeWithoutArg);
             keyWords.Add("SingleThreaded", TokenType.AttributeWithoutArg);
+
+            keyWords.Add("Author", TokenType.AttributeWithArg);
+            keyWords.Add("Description", TokenType.AttributeWithArg);
+
 
             keyWords.Add("SetUp", TokenType.TestAttributeWithoutArg);
             keyWords.Add("Test", TokenType.TestAttributeWithoutArg);
@@ -720,11 +788,16 @@ namespace TestTranslator
             keyWords.Add("Sequential", TokenType.TestAttributeWithoutArg);
             keyWords.Add("Theory", TokenType.TestAttributeWithoutArg);
 
+            keyWords.Add("Retry", TokenType.TestAttributeWithArg);
+
             keyWords.Add("void", TokenType.ReturnType);
             keyWords.Add("int", TokenType.ReturnType);
 
             keyWords.Add("Assert", TokenType.Assertion);
             keyWords.Add("CollectionAssert", TokenType.Assertion);
+            keyWords.Add("StringAssert", TokenType.Assertion);
+            keyWords.Add("FileAssert", TokenType.Assertion);
+            keyWords.Add("DirectoryAssert", TokenType.Assertion);
 
 
         }
@@ -738,10 +811,11 @@ namespace TestTranslator
         {
             return state;
         }
-        /*public void setPrevState(ParserState prev)
+        
+        public void FoundNUnit()
         {
-            prevState = prev;
-        }*/
+            foundNUnit = true;
+        }
 
     }
 }

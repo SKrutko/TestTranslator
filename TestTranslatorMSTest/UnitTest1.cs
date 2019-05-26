@@ -1,24 +1,19 @@
-﻿using System; // one line comment
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System; // one line comment
 using System.Collections.Generic;
 using System.Text;
-using NUnit.Framework;
-/*multiple
- * line
- * comment*/
-
 namespace TestTranslator
 {
+    [TestClass]
     public class DocumentTests
     {
         Document document;
-
-        [SetUp]
+        [TestInitialize]
         public void Setup()
         {
             document = new Document();
         }
-
-        [Test]
+        [TestMethod]
         public void getDocumentStructure_()
         {
             List<documentUnit> expected = new List<documentUnit>();
@@ -28,7 +23,6 @@ namespace TestTranslator
             expected.Add(documentUnit.Using);
             expected.Add(documentUnit.Namespace);
             expected.Add(documentUnit.MultipleLineComment);
-
             List<string> given = new List<string>();
             given.Add("first line");
             given.Add("second line");
@@ -38,10 +32,8 @@ namespace TestTranslator
             document.addUsingStatement("System");
             document.addNamespaceStatement("DocumentTests");
             document.addComment(given, false);
-
             CollectionAssert.AreEqual(expected, document.getDocumentStructure());
-
-
         }
     }
 }
+

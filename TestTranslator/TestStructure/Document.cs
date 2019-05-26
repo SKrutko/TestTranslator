@@ -23,7 +23,7 @@ namespace TestTranslator
         public Document()
         {
             usingStatements = new List<UsingStatement>();
-            //namespaseStatement = new NamespaseStatement("");
+            namespaseStatement = new NamespaseStatement("");
             listOfClasses = new List<Class>();
             documentStructure = new List<documentUnit>();
             listOfCodeLines = new List<string>();
@@ -132,7 +132,7 @@ namespace TestTranslator
         {
             addToStructure(documentUnit.Assertion);
             assertions.Add(assertion);
-            if (!assertion.translatable())
+            if (!assertion.IsTranslatable())
                 testMethods[testMethods.Count - 1].ToComment();
         }
         public List<Assertion> GetAssertions()

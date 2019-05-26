@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace TestTranslator
 {
+    [TestFixture]
     class CodeGeneratorTests
     {
         CodeGenerator codeGenerator;
@@ -70,9 +71,8 @@ namespace TestTranslator
         public void generate_givenClass_returnUsingClass()
         {
             List<Attribute> givenClassAttributes = new List<Attribute>();
-            givenClassAttributes.Add(new Attribute(AttributeType.ClassAttribute, "TestFixture"));
+            //givenClassAttributes.Add(new Attribute(AttributeType.ClassAttribute, "TestFixture"));
             Document given = new Document();
-            given.addToStructure(documentUnit.ClassAttributeWithoutArgs);
             given.addClass("CodeGeneratorTests", givenClassAttributes);
 
             List<string> expected = new List<string>();
@@ -89,11 +89,10 @@ namespace TestTranslator
         public void generate_given2Classes_returnUsing2Classe()
         {
             List<Attribute> givenClassAttributes1 = new List<Attribute>();
-            givenClassAttributes1.Add(new Attribute(AttributeType.ClassAttribute, "TestFixture"));
+            givenClassAttributes1.Add(new Attribute("TestFixture"));
             List<Attribute> givenClassAttributes2 = new List<Attribute>();
-            givenClassAttributes2.Add(new Attribute(AttributeType.ClassAttribute, "SingleThreaded"));
+            givenClassAttributes2.Add(new Attribute("SingleThreaded"));
             Document given = new Document();
-            given.addToStructure(documentUnit.ClassAttributeWithoutArgs);
             given.addClass("CodeGeneratorTests", givenClassAttributes1);
             given.addToStructure(documentUnit.ClassAttributeWithoutArgs);
             given.addComment("one line comment", true);
@@ -105,6 +104,7 @@ namespace TestTranslator
             expected.Add("    public class CodeGeneratorTests");
             expected.Add("    {");
             expected.Add("    }");
+            expected.Add("    [TestClass]");
             expected.Add("    [SingleThreaded] //one line comment");
             expected.Add("    public class CodeGeneratorTests2");
             expected.Add("    {");
@@ -117,10 +117,10 @@ namespace TestTranslator
         public void generate_givenClassWithCodeLines()
         {
             List<Attribute> givenClassAttributes = new List<Attribute>();
-            givenClassAttributes.Add(new Attribute(AttributeType.ClassAttribute, "TestFixture"));
+            givenClassAttributes.Add(new Attribute("TestFixture"));
             
             Document given = new Document();
-            given.addToStructure(documentUnit.ClassAttributeWithoutArgs);
+           // given.addToStructure(documentUnit.ClassAttributeWithoutArgs);
             given.addClass("CodeGeneratorTests", givenClassAttributes);
 
             given.addCodeLine("int i = 0;");
@@ -142,15 +142,15 @@ namespace TestTranslator
         public void generate_givenClassWithTestMethod()
         {
             List<Attribute> givenClassAttributes = new List<Attribute>();
-            givenClassAttributes.Add(new Attribute(AttributeType.ClassAttribute, "TestFixture"));
+            //givenClassAttributes.Add(new Attribute(AttributeType.ClassAttribute, "TestFixture"));
 
             Document given = new Document();
-            given.addToStructure(documentUnit.ClassAttributeWithoutArgs);
+            //given.addToStructure(documentUnit.ClassAttributeWithoutArgs);
             given.addClass("CodeGeneratorTests", givenClassAttributes);
 
             given.addToStructure(documentUnit.TestAttributeWithoutArgs);
             List<Attribute> givenListOfAttr = new List<Attribute>();
-            givenListOfAttr.Add(new Attribute(AttributeType.TestAttribute, "SetUp"));
+            givenListOfAttr.Add(new Attribute("SetUp"));
 
             TestMethod setUp = new TestMethod("void", givenListOfAttr);
             setUp.AddArgs("");
@@ -159,7 +159,7 @@ namespace TestTranslator
 
             given.addToStructure(documentUnit.TestAttributeWithoutArgs);
             List<Attribute> givenListOfAttr1 = new List<Attribute>();
-            givenListOfAttr1.Add(new Attribute(AttributeType.TestAttribute, "Test"));
+            givenListOfAttr1.Add(new Attribute("Test"));
 
             TestMethod test = new TestMethod("void", givenListOfAttr1);
             test.AddArgs("");
@@ -175,7 +175,7 @@ namespace TestTranslator
             expected.Add("        public void SetupMethod()");
             expected.Add("        {");
             expected.Add("        }");
-            expected.Add("        [TestCase]");
+            expected.Add("        [TestMethod]");
             expected.Add("        public void TestMethod1()");
             expected.Add("        {");
             expected.Add("        }");
@@ -188,15 +188,15 @@ namespace TestTranslator
         public void generate_givenClassWithTestMethodWithAssertions()
         {
             List<Attribute> givenClassAttributes = new List<Attribute>();
-            givenClassAttributes.Add(new Attribute(AttributeType.ClassAttribute, "TestFixture"));
+            givenClassAttributes.Add(new Attribute("TestFixture"));
 
             Document given = new Document();
-            given.addToStructure(documentUnit.ClassAttributeWithoutArgs);
+            //given.addToStructure(documentUnit.ClassAttributeWithoutArgs);
             given.addClass("CodeGeneratorTests", givenClassAttributes);
 
             given.addToStructure(documentUnit.TestAttributeWithoutArgs);
             List<Attribute> givenListOfAttr1 = new List<Attribute>();
-            givenListOfAttr1.Add(new Attribute(AttributeType.TestAttribute, "Test"));
+            givenListOfAttr1.Add(new Attribute("Test"));
 
             TestMethod test = new TestMethod("void", givenListOfAttr1);
             test.AddArgs("");
@@ -220,7 +220,7 @@ namespace TestTranslator
             expected.Add("    [TestClass]");
             expected.Add("    public class CodeGeneratorTests");
             expected.Add("    {");
-            expected.Add("        [TestCase]");
+            expected.Add("        [TestMethod]");
             expected.Add("        public void TestMethod1()");
             expected.Add("        {");
             expected.Add("            Assert.AreEqual(1, 1);");
@@ -228,6 +228,34 @@ namespace TestTranslator
             expected.Add("        }");
             expected.Add("    }");
 
+            CollectionAssert.AreEqual(expected, codeGenerator.TranslateDocument(given));
+        }
+
+        [Test]
+        public void generateTest_multipleLineComment()
+        {
+            List<string> givenComment1 = new List<string>();
+            givenComment1.Add("multiple");
+            givenComment1.Add("line");
+            givenComment1.Add("comment");
+            List<string> givenComment2 = new List<string>();
+            givenComment2.Add("comment");
+            givenComment2.Add("again");
+
+            Document given = new Document();
+            given.addComment(givenComment1, false);
+            given.addUsingStatement("System");
+            given.addComment(givenComment2, true);
+           
+            List<string> expected = new List<string>();
+            expected.Add("using Microsoft.VisualStudio.TestTools.UnitTesting;");
+             expected.Add("/*multiple");
+            expected.Add("line");
+            expected.Add("comment*/");
+            expected.Add("using System; /*comment");
+            expected.Add("again*/");
+           
+       
             CollectionAssert.AreEqual(expected, codeGenerator.TranslateDocument(given));
         }
 
@@ -248,8 +276,10 @@ namespace TestTranslator
             expected.Add("namespace TestTranslator.Test");
             expected.Add("{");
             expected.Add("}");
+            List<string> result = codeGenerator.TranslateDocument(given);
 
-            CollectionAssert.AreEqual(expected, codeGenerator.TranslateDocument(given));
+            
+            CollectionAssert.AreEqual(expected, result);
         }
     }
 }

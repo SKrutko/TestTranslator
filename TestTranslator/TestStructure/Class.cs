@@ -21,7 +21,11 @@ namespace TestTranslator
         {
             name = className;
             this.listOfAttributes = listOfAttributes;
-
+            foreach(Attribute a in listOfAttributes)
+            {
+                if (!a.IsTranslatable())
+                    commented = true;
+            }
         }
         public string getName()
         {

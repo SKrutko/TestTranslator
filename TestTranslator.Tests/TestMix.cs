@@ -8,7 +8,8 @@ using NUnit.Framework;
 
 namespace TestTranslator
 {
-    public class DocumentTests
+    [TestFixture, Author("Sofia Krutko")]
+    class TestMix
     {
         Document document;
 
@@ -19,7 +20,8 @@ namespace TestTranslator
         }
 
         [Test]
-        public void getDocumentStructure_()
+        [Retry(3)]
+        public void TestCollectionAssert()
         {
             List<documentUnit> expected = new List<documentUnit>();
             expected.Add(documentUnit.Using);
@@ -40,8 +42,48 @@ namespace TestTranslator
             document.addComment(given, false);
 
             CollectionAssert.AreEqual(expected, document.getDocumentStructure());
-
-
         }
     }
+
+
+    [TestFixture]
+    class TestMixClass2
+    {
+        CodeGenerator codeGenerator;
+        [SetUp, Description("is repeated before each test method")]
+        public void Setup()
+        {
+            codeGenerator = new CodeGenerator();
+        }
+
+        [Test]
+        public void generate_givenEmptyDoc_returnOneUsing()
+        {
+            Document given = new Document();
+            List<string> expected = new List<string>();
+            Assert.AreEqual("using Microsoft.VisualStudio.TestTools.UnitTesting;", codeGenerator.TranslateDocument(given)[0]);
+        }
+    }
+    class TestMixClass3
+    {
+        //TextMexClass3 is without any class attribute
+        Scanner scanner;
+        [SetUp]
+        public void Setup()
+        {
+            scanner = new Scanner();
+        }
+        [Test]
+        public void isSingleSpecialCar_givenSpecialCar_returnTrue()
+        {
+            Assert.True(scanner.isSingleSpecialCharacter('.'));
+        }
+    }
+
+    [Description("should be commented")]
+    class TestMixClass4
+    {
+        Parser parser;
+    }
+
 }

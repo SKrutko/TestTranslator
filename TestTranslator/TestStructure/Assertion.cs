@@ -12,9 +12,14 @@ namespace TestTranslator
         private string method;
         private string args;
 
+        private Dictionary<string, string> MethodsTranslations;
+        private List<string> TranslatableAssertions;
+        private List<string> TranslatableMethods;
+
         public Assertion(string type)
         {
             this.type = type;
+            fillInDictionary();
         }
 
         public void SetMethod(string method)
@@ -27,30 +32,77 @@ namespace TestTranslator
             this.args = args;
         }
 
-        public bool translatable()
+        public bool IsTranslatable()
         {
-            return false; //TODO
+            if (TranslatableAssertions.Contains(type)
+                && (TranslatableMethods.Contains(method) || MethodsTranslations.ContainsKey(method)))
+                return true;
+            return false;
         }
 
-        public string GetTranslatedType()
+        public string GetType()
         {
-            //TODO
             return type;
         }
         public string GetTranslatedMethod()
         {
-            //TODO
+            string translatedMethod;
+            MethodsTranslations.TryGetValue(method, out translatedMethod);
+            if (MethodsTranslations.ContainsKey(method))
+                return translatedMethod;
             return method;
         }
-        public string GetTranslatedArgs()
+        public string GetArgs()
         {
-            //TODO
             return args;
+        }
+
+        private void fillInDictionary()
+        {
+            MethodsTranslations = new Dictionary<string, string>();
+            TranslatableAssertions = new List<string>();
+            TranslatableMethods = new List<string>();
+
+            MethodsTranslations.Add("True", "IsTrue");
+            MethodsTranslations.Add("False", "IsFalse");
+            MethodsTranslations.Add("Null", "IsNull");
+            MethodsTranslations.Add("NotNull", "IsNotNull");
+
+            TranslatableAssertions.Add("Assert");
+            TranslatableAssertions.Add("StringAssert");
+            TranslatableAssertions.Add("CollectionAssert");
+            TranslatableMethods.Add("AreEqual");
+            TranslatableMethods.Add("AreNotEqual");
+            TranslatableMethods.Add("AreSame");
+            TranslatableMethods.Add("AreNotSame");
+            TranslatableMethods.Add("IsInstanceOf");
+            TranslatableMethods.Add("IsNotInstanceOf");
+            TranslatableMethods.Add("Pass");
+            TranslatableMethods.Add("Fail");
+            TranslatableMethods.Add("Ignore");
+            TranslatableMethods.Add("Inconclusive");
+
+            TranslatableMethods.Add("Contains");
+            TranslatableMethods.Add("DoesNotContain");
+            TranslatableMethods.Add("StartsWith");
+            TranslatableMethods.Add("EndsWith");
+            TranslatableMethods.Add("DoesNotMatch");
+
+            TranslatableMethods.Add("AllItemsAreInstancesOfType");
+            TranslatableMethods.Add("AllItemsAreNotNull");
+            TranslatableMethods.Add("AllItemsAreUnique");
+            TranslatableMethods.Add("AreEquivalent");
+            TranslatableMethods.Add("AreNotEquivalent");
+            TranslatableMethods.Add("DoesNotContain");
+            TranslatableMethods.Add("Equals");
+            TranslatableMethods.Add("IsNotSubsetOf");
+            TranslatableMethods.Add("IsSubsetOf");
+            TranslatableMethods.Add("ReferenceEquals");
         }
 
         public string GetLineToPrint()
         {
-            return (GetTranslatedType() + "." + GetTranslatedMethod() + "(" + GetTranslatedArgs() + ");");
+            return GetType() + "." + GetTranslatedMethod() + "(" + GetArgs() + ");";
         }
     }
 }

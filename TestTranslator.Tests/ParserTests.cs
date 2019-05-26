@@ -2,11 +2,6 @@ using NUnit.Framework;
 using System.Collections; //comment 1
 using System.Collections.Generic;
 
-/* multiple
- * line
- * comment
- * */
-
 namespace TestTranslator
 {
     public class ParserTests
@@ -139,6 +134,8 @@ namespace TestTranslator
         [Test]
         public void analize_givenNamespace_createdNamespaceInDocument()
         {
+            parser.FoundNUnit();
+
             string[] givenToken = { "namespace", "Namespace", ".", "Name", "{"};
             bool[] givenSpace = { false, true, false, false, false };
             int numberOfGivenElements = 5;
@@ -152,7 +149,7 @@ namespace TestTranslator
             Assert.AreEqual("Namespace.Name", result);
             Assert.AreEqual(ParserState.ExpectedClass, parser.getState());
         }
-
+        [Test]
         public void analize_givenCommentCharInString_detectedAsString() //???
         {
             parser.changeState(ParserState.ExpectedCodeLineOrTestMethod);
@@ -252,7 +249,7 @@ namespace TestTranslator
             Document document = Program.GetDocument();
             List<Attribute> result = document.getListOfClasses()[0].getListOfAttributes();
 
-            Assert.AreEqual("TestClass", result[0].getKeyWord());
+            Assert.AreEqual(0, result.Count);
         }
         [Test]
         public void analize_givenCodeLineInClass_addedToDoc()
@@ -371,9 +368,7 @@ namespace TestTranslator
             CollectionAssert.AreEqual(expectedStructure, document.getDocumentStructure() );
 
             Assert.AreEqual("TestInitialize", result[0].getListOfAttributes()[0].getKeyWord());
-            Assert.AreEqual("TestCase", result[1].getListOfAttributes()[0].getKeyWord());
-
-            Assert.AreEqual(AttributeType.TestAttribute, result[0].getListOfAttributes()[0].getType());
+            Assert.AreEqual("TestMethod", result[1].getListOfAttributes()[0].getKeyWord());
 
            // CollectionAssert.AreEqual(attr1, result[0].getListOfAttributes());
             //CollectionAssert.AreEqual(attr2, result[1].getListOfAttributes());
@@ -500,8 +495,36 @@ namespace TestTranslator
             parser.analize("*/", true, true);
             Assert.AreEqual(ParserState.ExpectedClass, parser.getState());
         }
+        [Test]
+        public void analize_givenMLComment_addedToDocument()
+        {
+            string[] given = {"/*", "multiple",
+            "*", "line",
+            "*", "comment", "*/"};
+            bool[] givenSpace = {false, true,
+            false, true,
+            false, true, false};
+            bool[] givenEndl = {false, true,
+            false, true,
+            false, false, true};
 
-        
+            List<string> expected = new List<string>();
+            expected.Add(" multiple");
+            expected.Add("* line");
+            expected.Add("* comment");
+
+
+            for (int i = 0; i < 7; i++)
+                parser.analize(given[i], givenSpace[i], givenEndl[i]);
+
+            Document document = Program.GetDocument();
+
+            Assert.AreEqual(documentUnit.MultipleLineComment, document.getDocumentStructure()[0]);
+            CollectionAssert.AreEqual(expected, document.getListOfMultipleLineComments()[0].getMessage());
+        }
+
+
+
 
     }
 

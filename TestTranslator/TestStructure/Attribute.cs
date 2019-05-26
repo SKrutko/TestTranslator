@@ -10,6 +10,7 @@ namespace TestTranslator
     {
         private AttributeType type;
         private string keyWord;
+        private string arguments;
         private Dictionary<string, string> keyWords;
 
         public Attribute(AttributeType type, string keyWord)
@@ -17,27 +18,27 @@ namespace TestTranslator
             this.type = type;
             this.keyWord = keyWord;
             fillInDictionary();
+            arguments = "";
         }
 
-        public AttributeType getType()
-        {
-            return type;
-        }
-
+        
         public string getKeyWord()
         {
-            return translate(keyWord);
+            return translate();
         }
 
         public bool IsTranslatable()
         {
-            return true;
+            if ((keyWord.Equals("Description") || keyWord.Equals("Author"))
+                && type == AttributeType.ClassAttribute)
+                return false;
+            return keyWords.ContainsKey(keyWord);
         }
 
         private void fillInDictionary()
         {
             keyWords = new Dictionary<string, string>();
-            keyWords.Add("Test", "TestCase");
+            keyWords.Add("Test", "TestMethod");
             keyWords.Add("TestFixture", "TestClass");
             keyWords.Add("SetUp", "TestInitialize");
             keyWords.Add("TearDown", "TestCleanUp");
@@ -47,20 +48,35 @@ namespace TestTranslator
             keyWords.Add("OneTimeTearDown", "ClassCleanup");
             keyWords.Add("Property", "TestProperty");
             keyWords.Add("Theory", "DataRow");
+            keyWords.Add("Description", "Description");
+            keyWords.Add("Ignore", "Ignore");
+
         }
-        private string translate(string kw)
+        private string translate()
         {
             string MSequivalent;
-            keyWords.TryGetValue(kw, out MSequivalent);
-            if (keyWords.ContainsKey(kw))
+            keyWords.TryGetValue(keyWord, out MSequivalent);
+            if (keyWords.ContainsKey(keyWord))
                 return MSequivalent;
-            return kw;
+            return keyWord;
         }
-    }
 
+        public void SetArguments(string args)
+        {
+            arguments = args;
+        }
+
+        public string GetArguments()
+        {
+            return arguments;
+        }
+        
+    }
     public enum AttributeType
     {
         ClassAttribute,
         TestAttribute
     }
+
+
 }
