@@ -9,17 +9,17 @@ namespace TestTranslator
 {
     //[TestClass]
     //[Owner("Sofia Krutko")]
-    //public class TestMix
+    //public class MSTestMix
     //{
         //Document document;
         //[TestInitialize]
-        //public void Setup()
+        //public void MSSetup()
         //{
             //document = new Document();
         //}
         //[TestMethod]
         //[Retry(3)]
-        //public void TestCollectionAssert()
+        //public void MSTestCollectionAssert()
         //{
             //List<documentUnit> expected = new List<documentUnit>();
             //expected.Add(documentUnit.Using);
@@ -41,17 +41,17 @@ namespace TestTranslator
         //}
     //}
     [TestClass]
-    public class TestMixClass2
+    public class MSTestMixClass2
     {
         CodeGenerator codeGenerator;
         [TestInitialize]
         [Description("is repeated before each test method")]
-        public void Setup()
+        public void MSSetup()
         {
             codeGenerator = new CodeGenerator();
         }
         [TestMethod]
-        public void generate_givenEmptyDoc_returnOneUsing()
+        public void MSgenerate_givenEmptyDoc_returnOneUsing()
         {
             Document given = new Document();
             List<string> expected = new List<string>();
@@ -59,24 +59,25 @@ namespace TestTranslator
         }
     }
     [TestClass]
-    public class TestMixClass3
+    public class MSTestMixClass3
     {
         // TextMexClass3 is without any class attribute
         Scanner scanner;
         [TestInitialize]
-        public void Setup()
+        public void MSSetup()
         {
             scanner = new Scanner();
         }
         [TestMethod]
-        public void isSingleSpecialCar_givenSpecialCar_returnTrue()
+        public void MSisSingleSpecialCar_givenSpecialCar_returnTrue()
         {
+            // Assert.True should be translated
             Assert.IsTrue(scanner.isSingleSpecialCharacter('.'));
         }
     }
     //[TestClass]
     //[Description("should be commented")]
-    //public class TestMixClass4
+    //public class MSTestMixClass4
     //{
         //Parser parser;
     //}

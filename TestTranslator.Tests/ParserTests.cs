@@ -155,7 +155,7 @@ namespace TestTranslator
             parser.changeState(ParserState.ExpectedCodeLineOrTestMethod);
 
             List<documentUnit> expected = new List<documentUnit>();
-            expected.Add(documentUnit.CodeLineInClass);
+            expected.Add(documentUnit.CodeLine);
             
             string[] givenToken = { "string", "s", "=", "\"", "/*", "something", "*/", "\"", ";" }; //string s = "/* something */";
         
@@ -224,7 +224,7 @@ namespace TestTranslator
             List<Class> resultList = document.getListOfClasses();
 
             Assert.AreEqual(1, resultList.Count);
-            Assert.AreEqual("ClassName", resultList[0].getName());
+            Assert.AreEqual("MSClassName", resultList[0].getName());
             Assert.AreEqual(ParserState.FoundClassNameExpectedLeftBrace, parser.getState());
         }
 
@@ -267,7 +267,7 @@ namespace TestTranslator
 
             Document document = Program.GetDocument();
             
-            Assert.AreEqual(documentUnit.CodeLineInClass, document.getDocumentStructure()[0]);
+            Assert.AreEqual(documentUnit.CodeLine, document.getDocumentStructure()[0]);
             Assert.AreEqual(1, document.getListOfCodeLines().Count);
             Assert.AreEqual("parser.analize( given );", document.getListOfCodeLines()[0]);
         }
@@ -292,8 +292,8 @@ namespace TestTranslator
 
             Document document = Program.GetDocument();
 
-            Assert.AreEqual(documentUnit.CodeLineInClass, document.getDocumentStructure()[0]);
-            Assert.AreEqual(documentUnit.CodeLineInClass, document.getDocumentStructure()[1]);
+            Assert.AreEqual(documentUnit.CodeLine, document.getDocumentStructure()[0]);
+            Assert.AreEqual(documentUnit.CodeLine, document.getDocumentStructure()[1]);
             Assert.AreEqual(2, document.getListOfCodeLines().Count);
             Assert.AreEqual("parser.analize( given );", document.getListOfCodeLines()[0]);
             Assert.AreEqual("parser.changeState();", document.getListOfCodeLines()[1]);

@@ -46,7 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller\MainFormController.cs" />
+    <Compile Include="MainFormController.cs" />
     <Compile Include="TestStructure\Assertion.cs" />
     <Compile Include="TestStructure\Attribute.cs" />
     <Compile Include="TestStructure\Class.cs" />
@@ -66,6 +66,9 @@
     <Compile Include="Translator\Scanner.cs" />
     <Compile Include="TestStructure\NamespaseStatement.cs" />
     <Compile Include="TestStructure\UsingStatement.cs" />
+    <Compile Include="Types\ScannerResponse.cs" />
+    <Compile Include="Types\ParserStates.cs" />
+    <Compile Include="Types\DokumentUnits.cs" />
     <Compile Include="Types\TokenTypes.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

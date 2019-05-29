@@ -44,22 +44,8 @@ namespace TestTranslator
             testMethods = document.GetTestMethods();
             assertions = document.GetAssertions();
 
-            //TODO: delete tmp
-            /*foreach (Class c  in classes)
-            {
-                foreach(Attribute a in c.getListOfAttributes())
-                    AddToResultDocument(a.getKeyWord() + " (" + a.GetArguments() + ")-c");
-                AddToResultDocument("------------------------");
-            }
-
-            foreach (TestMethod tm in testMethods)
-            {
-                foreach (Attribute a in tm.getListOfAttributes())
-                    AddToResultDocument(a.getKeyWord() + " (" + a.GetArguments() + ")-tm");
-                AddToResultDocument("------------------------");
-            }*/
-
-                foreach (documentUnit du in document.getDocumentStructure())
+            
+            foreach (documentUnit du in document.getDocumentStructure())
             {
                 switch (du)
                 {
@@ -116,7 +102,10 @@ namespace TestTranslator
                         AddRightBraceIfNeededAfterMethod();
                         AddRightBraceIfNeededAfterClass(); //add "}" after previous class if needed
                         AddTestClassAttributeIfNeeded();
-                        AddClassAttributeWithoutArgs();
+                        if (classes.ElementAt(0).getListOfAttributes().ElementAt(0).GetArguments().Equals(""))
+                            AddClassAttributeWithoutArgs();
+                        else
+                            AddClassAttributeWithArgs();
                         break;
 
                     case documentUnit.ClassAttributeWithArgs:
@@ -137,7 +126,7 @@ namespace TestTranslator
                         lineBeggining = "        ";
                         break;
 
-                    case documentUnit.CodeLineInClass:
+                    case documentUnit.CodeLine:
                         
                         AddCodeLine();
                         break;
@@ -214,8 +203,7 @@ namespace TestTranslator
         public void AddClassAttributeWithoutArgs()
         {
             lineBeggining = "    "; //style
-           // AddRightBraceIfNeededAfterClass(); //add "}" after previous class if needed
-
+           
             //form next line:
             string attr = "";
             attr += CheckIfClassIsCommented();

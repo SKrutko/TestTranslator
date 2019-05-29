@@ -29,7 +29,7 @@ namespace TestTranslator
         }
         public string getName()
         {
-            return name;
+            return "MS" + name;
         }
 
         public List<Attribute> getListOfAttributes()

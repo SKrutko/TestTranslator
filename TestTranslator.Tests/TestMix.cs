@@ -76,6 +76,7 @@ namespace TestTranslator
         [Test]
         public void isSingleSpecialCar_givenSpecialCar_returnTrue()
         {
+            //Assert.True should be translated
             Assert.True(scanner.isSingleSpecialCharacter('.'));
         }
     }

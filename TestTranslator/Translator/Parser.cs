@@ -9,14 +9,6 @@ namespace TestTranslator
 {
     public class Parser
     {
-        //TODO: delete tmp
-        //temporary
-        List<string> tokens;
-        List<bool> spaces;
-        List<bool> endlines;
-        //temporary
-
-
         private ParserState state;
         private ParserState prevState;
         private Dictionary<string, TokenType> keyWords;
@@ -56,31 +48,24 @@ namespace TestTranslator
             document = Program.GetDocument();
 
             listOfAttributes = new List<Attribute>();
-
-            tokens = new List<string>();
-            spaces = new List<bool>();
-            endlines = new List<bool>();
         }
 
         public void parse(string token, bool space, bool endl)
         {
-            tokens.Add(token);
-            spaces.Add(space);
-            endlines.Add(endl);
             try
             {
                 analize(token, space, endl);
             }
             catch (NullReferenceException ex)
             {
-
+                changeState(ParserState.Error);
+                errorMessage = "NullReferenceException";
             }
             catch (Exception ex)
             {
-
+                changeState(ParserState.Error);
+                errorMessage = "Exception";
             }
-            
-            //end();
         }
         public void analize(string nextToken, bool space, bool endl)
         {
@@ -234,9 +219,6 @@ namespace TestTranslator
             newLine = endl;
         }
 
-
-        /// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         private void doIfOneLineComment(string nextToken, bool space, bool endl)
         {
             if (space)
@@ -285,6 +267,11 @@ namespace TestTranslator
                 }
                 else
                     state = ParserState.FoundNamespaceExpectedName;
+            }
+            else
+            {
+                changeState(ParserState.Error);
+                errorMessage = "Expected \"using\" or \"namespace\" but found: " + nextToken;
             }
         }
         private void doIfFoundUsingExpectedDirectoryName(string nextToken)
@@ -574,6 +561,10 @@ namespace TestTranslator
             {
                 changeState(ParserState.FoundMethodDeclarationExpectedRightParenthesis);
             }
+            else
+            {
+                changeState(ParserState.Error);
+            }
         }
         private void doIfFoundMethodDeclarationExpectedRightParenthesis(string nextToken)
         {
@@ -621,7 +612,7 @@ namespace TestTranslator
             }
         }
 
-        private void doIfFoundAssertionExpectedDot(string nextToken) //expected dot
+        private void doIfFoundAssertionExpectedDot(string nextToken) 
         {
             if (nextToken.Equals("."))
             {
@@ -684,7 +675,6 @@ namespace TestTranslator
         }
         private void doIfFoundAssertionExpectedEndl(string nextToken)
         {
-            //TODO: stringMode?
             if (nextToken.Equals(";"))
                 changeState(ParserState.ExpectedCodeLineOrAssertion);
             else
@@ -716,25 +706,14 @@ namespace TestTranslator
             return stringMode;
         }
 
-/// <summary>
-/// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// </summary>
         public void end()
         {
             MainFormController mfc = Program.getMainFormController();
             FormMain formMain = mfc.getForm();
 
-            /*List <UsingStatement> usingStatements = document.getListOfUsingStatements();
-            List<OneLineComment> onelineComments = document.getListOfOneLineComments();
-            List<Class> listOfClasses = document.getListOfClasses();
-            List<string> listOfCodeLines = document.getListOfCodeLines();
-            */
+           
             if (getState() != ParserState.Error)
             {
-               /* for(int i = 0; i < tokens.Count; i++)
-                {
-                    formMain.print(tokens[i] + ", " + spaces[i] + ", " + endlines[i]);
-                }*/
                 CodeGenerator cg = new CodeGenerator();
                 cg.Generate(document);
 
@@ -767,7 +746,8 @@ namespace TestTranslator
             keyWords.Add("TestFixture", TokenType.ClassAttributeWithoutArg);
             keyWords.Add("SetUpFixture", TokenType.ClassAttributeWithoutArg);
 
-            //keyWords.Add("", TokenType.ClassAttributeWithArg);
+            keyWords.Add("Property", TokenType.ClassAttributeWithArg);
+            keyWords.Add("TestFixtureSource", TokenType.ClassAttributeWithArg);
 
             keyWords.Add("Parallelizable", TokenType.AttributeWithoutArg);
             keyWords.Add("RequiresThread", TokenType.AttributeWithoutArg);
@@ -778,7 +758,14 @@ namespace TestTranslator
 
             keyWords.Add("Author", TokenType.AttributeWithArg);
             keyWords.Add("Description", TokenType.AttributeWithArg);
-
+            keyWords.Add("Category", TokenType.AttributeWithArg);
+            keyWords.Add("Ignore", TokenType.AttributeWithArg);
+            keyWords.Add("DefaultFloatingPointTolerance", TokenType.AttributeWithArg);
+            keyWords.Add("MaxTime", TokenType.AttributeWithArg);
+            keyWords.Add("Order", TokenType.AttributeWithArg);
+            keyWords.Add("SetCulture", TokenType.AttributeWithArg);
+            keyWords.Add("SetUICulture", TokenType.AttributeWithArg);
+            keyWords.Add("TestOf", TokenType.AttributeWithArg);
 
             keyWords.Add("SetUp", TokenType.TestAttributeWithoutArg);
             keyWords.Add("Test", TokenType.TestAttributeWithoutArg);
@@ -787,8 +774,12 @@ namespace TestTranslator
             keyWords.Add("Pairwise", TokenType.TestAttributeWithoutArg);
             keyWords.Add("Sequential", TokenType.TestAttributeWithoutArg);
             keyWords.Add("Theory", TokenType.TestAttributeWithoutArg);
+            keyWords.Add("OneTimeSetUp", TokenType.TestAttributeWithoutArg);
+            keyWords.Add("OneTimeTearDown", TokenType.TestAttributeWithoutArg);
 
+            keyWords.Add("Repeat", TokenType.TestAttributeWithArg);
             keyWords.Add("Retry", TokenType.TestAttributeWithArg);
+            keyWords.Add("TestCaseSource", TokenType.TestAttributeWithArg);
 
             keyWords.Add("void", TokenType.ReturnType);
             keyWords.Add("int", TokenType.ReturnType);

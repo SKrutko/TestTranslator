@@ -104,7 +104,7 @@ namespace TestTranslator
         public void addCodeLine(string line)
         {
             listOfCodeLines.Add(line);
-            documentStructure.Add(documentUnit.CodeLineInClass);
+            documentStructure.Add(documentUnit.CodeLine);
         }
 
         public List<string> getListOfCodeLines()

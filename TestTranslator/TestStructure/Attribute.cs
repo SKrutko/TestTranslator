@@ -41,7 +41,7 @@ namespace TestTranslator
             keyWords.Add("Test", "TestMethod");
             keyWords.Add("TestFixture", "TestClass");
             keyWords.Add("SetUp", "TestInitialize");
-            keyWords.Add("TearDown", "TestCleanUp");
+            keyWords.Add("TearDown", "TestCleanup");
             keyWords.Add("Author", "Owner");
             keyWords.Add("Category", "TestCategory");
             keyWords.Add("OneTimeSetUp", "ClassInitialize");

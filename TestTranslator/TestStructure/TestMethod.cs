@@ -13,6 +13,7 @@ namespace TestTranslator
         private string name;
         private string args;
         private bool commented = false;
+        private bool classInitializeMethod = false;
 
         public TestMethod(string type,  List<Attribute> attributes)
         {
@@ -21,8 +22,17 @@ namespace TestTranslator
             listOfAttributes.AddRange(attributes);
 
             foreach (Attribute a in attributes)
+            {
                 if (!a.IsTranslatable())
                     commented = true;
+
+                //ClassInitialize should be public static void with single argument of type TestContext
+                if (a.getKeyWord().Equals("ClassInitialize"))
+                {
+                    returnType = "static void";
+                    SetClassInitializeMethod();
+                }
+            }
         }
 
         public void SetName(string name)
@@ -37,7 +47,7 @@ namespace TestTranslator
 
         public string GetName()
         {
-            return name;
+            return "MS" + name;
         }
 
         public void AddArgs(string args)
@@ -47,6 +57,8 @@ namespace TestTranslator
 
         public string GetArgs()
         {
+            if(IsClassInitializeMethod())
+                args = "TestContext context";
             return args;
         }
         public List<Attribute> getListOfAttributes()
@@ -62,6 +74,14 @@ namespace TestTranslator
         public void ToComment()
         {
             commented = true;
+        }
+        private bool IsClassInitializeMethod()
+        {
+            return classInitializeMethod;
+        }
+        private void SetClassInitializeMethod()
+        {
+            classInitializeMethod = true;
         }
 
 

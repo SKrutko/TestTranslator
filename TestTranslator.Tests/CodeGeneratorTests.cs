@@ -78,7 +78,7 @@ namespace TestTranslator
             List<string> expected = new List<string>();
             expected.Add("using Microsoft.VisualStudio.TestTools.UnitTesting;");
             expected.Add("    [TestClass]");
-            expected.Add("    public class CodeGeneratorTests");
+            expected.Add("    public class MSCodeGeneratorTests");
             expected.Add("    {");
             expected.Add("    }");
 
@@ -89,9 +89,9 @@ namespace TestTranslator
         public void generate_given2Classes_returnUsing2Classe()
         {
             List<Attribute> givenClassAttributes1 = new List<Attribute>();
-            givenClassAttributes1.Add(new Attribute("TestFixture"));
+            givenClassAttributes1.Add(new Attribute(AttributeType.ClassAttribute, "TestFixture"));
             List<Attribute> givenClassAttributes2 = new List<Attribute>();
-            givenClassAttributes2.Add(new Attribute("SingleThreaded"));
+            givenClassAttributes2.Add(new Attribute(AttributeType.ClassAttribute, "SingleThreaded"));
             Document given = new Document();
             given.addClass("CodeGeneratorTests", givenClassAttributes1);
             given.addToStructure(documentUnit.ClassAttributeWithoutArgs);
@@ -101,14 +101,14 @@ namespace TestTranslator
             List<string> expected = new List<string>();
             expected.Add("using Microsoft.VisualStudio.TestTools.UnitTesting;");
             expected.Add("    [TestClass]");
-            expected.Add("    public class CodeGeneratorTests");
+            expected.Add("    public class MSCodeGeneratorTests");
             expected.Add("    {");
             expected.Add("    }");
-            expected.Add("    [TestClass]");
-            expected.Add("    [SingleThreaded] //one line comment");
-            expected.Add("    public class CodeGeneratorTests2");
-            expected.Add("    {");
-            expected.Add("    }");
+            expected.Add("    //[TestClass]");
+            expected.Add("    //[SingleThreaded] //one line comment");
+            expected.Add("    //public class MSCodeGeneratorTests2");
+            expected.Add("    //{");
+            expected.Add("    //}");
 
             CollectionAssert.AreEqual(expected, codeGenerator.TranslateDocument(given));
         }
@@ -117,7 +117,7 @@ namespace TestTranslator
         public void generate_givenClassWithCodeLines()
         {
             List<Attribute> givenClassAttributes = new List<Attribute>();
-            givenClassAttributes.Add(new Attribute("TestFixture"));
+            givenClassAttributes.Add(new Attribute(AttributeType.ClassAttribute, "TestFixture"));
             
             Document given = new Document();
            // given.addToStructure(documentUnit.ClassAttributeWithoutArgs);
@@ -129,7 +129,7 @@ namespace TestTranslator
             List<string> expected = new List<string>();
             expected.Add("using Microsoft.VisualStudio.TestTools.UnitTesting;");
             expected.Add("    [TestClass]");
-            expected.Add("    public class CodeGeneratorTests");
+            expected.Add("    public class MSCodeGeneratorTests");
             expected.Add("    {");
             expected.Add("        int i = 0;");
             expected.Add("        i++;");
@@ -150,7 +150,7 @@ namespace TestTranslator
 
             given.addToStructure(documentUnit.TestAttributeWithoutArgs);
             List<Attribute> givenListOfAttr = new List<Attribute>();
-            givenListOfAttr.Add(new Attribute("SetUp"));
+            givenListOfAttr.Add(new Attribute(AttributeType.TestAttribute, "SetUp"));
 
             TestMethod setUp = new TestMethod("void", givenListOfAttr);
             setUp.AddArgs("");
@@ -159,7 +159,7 @@ namespace TestTranslator
 
             given.addToStructure(documentUnit.TestAttributeWithoutArgs);
             List<Attribute> givenListOfAttr1 = new List<Attribute>();
-            givenListOfAttr1.Add(new Attribute("Test"));
+            givenListOfAttr1.Add(new Attribute(AttributeType.TestAttribute, "Test"));
 
             TestMethod test = new TestMethod("void", givenListOfAttr1);
             test.AddArgs("");
@@ -169,14 +169,14 @@ namespace TestTranslator
             List<string> expected = new List<string>();
             expected.Add("using Microsoft.VisualStudio.TestTools.UnitTesting;");
             expected.Add("    [TestClass]");
-            expected.Add("    public class CodeGeneratorTests");
+            expected.Add("    public class MSCodeGeneratorTests");
             expected.Add("    {");
             expected.Add("        [TestInitialize]");
-            expected.Add("        public void SetupMethod()");
+            expected.Add("        public void MSSetupMethod()");
             expected.Add("        {");
             expected.Add("        }");
             expected.Add("        [TestMethod]");
-            expected.Add("        public void TestMethod1()");
+            expected.Add("        public void MSTestMethod1()");
             expected.Add("        {");
             expected.Add("        }");
             expected.Add("    }");
@@ -188,7 +188,7 @@ namespace TestTranslator
         public void generate_givenClassWithTestMethodWithAssertions()
         {
             List<Attribute> givenClassAttributes = new List<Attribute>();
-            givenClassAttributes.Add(new Attribute("TestFixture"));
+            givenClassAttributes.Add(new Attribute(AttributeType.ClassAttribute, "TestFixture"));
 
             Document given = new Document();
             //given.addToStructure(documentUnit.ClassAttributeWithoutArgs);
@@ -196,7 +196,7 @@ namespace TestTranslator
 
             given.addToStructure(documentUnit.TestAttributeWithoutArgs);
             List<Attribute> givenListOfAttr1 = new List<Attribute>();
-            givenListOfAttr1.Add(new Attribute("Test"));
+            givenListOfAttr1.Add(new Attribute(AttributeType.TestAttribute, "Test"));
 
             TestMethod test = new TestMethod("void", givenListOfAttr1);
             test.AddArgs("");
@@ -218,10 +218,10 @@ namespace TestTranslator
             List<string> expected = new List<string>();
             expected.Add("using Microsoft.VisualStudio.TestTools.UnitTesting;");
             expected.Add("    [TestClass]");
-            expected.Add("    public class CodeGeneratorTests");
+            expected.Add("    public class MSCodeGeneratorTests");
             expected.Add("    {");
             expected.Add("        [TestMethod]");
-            expected.Add("        public void TestMethod1()");
+            expected.Add("        public void MSTestMethod1()");
             expected.Add("        {");
             expected.Add("            Assert.AreEqual(1, 1);");
             expected.Add("            CollectionAssert.AreEqual(b, c);");
