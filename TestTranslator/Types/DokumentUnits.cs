@@ -5,6 +5,7 @@
         Using,
         Namespace,
         Assertion,
+        NonToken,
 
         ClassAttributeWithArgs,
         ClassAttributeWithoutArgs,
@@ -12,13 +13,15 @@
         TestAttributeWithoutArgs,
 
         ClassDeclaration,
+
         TestMethodDeclaration,
+
 
         OneLineComment,
         OneLineCommentAfterCode,
         MultipleLineComment,
         MultipleLineCommentAfterCode,
 
-        CodeLine        
+        CodeLineInClass        
     }
 }

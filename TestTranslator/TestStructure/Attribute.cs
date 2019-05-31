@@ -29,7 +29,7 @@ namespace TestTranslator
 
         public bool IsTranslatable()
         {
-            if ((keyWord.Equals("Description") || keyWord.Equals("Author"))
+            if ((keyWord.Equals("Description") || keyWord.Equals("Author") || keyWord.Equals("Property"))
                 && type == AttributeType.ClassAttribute)
                 return false;
             return keyWords.ContainsKey(keyWord);
@@ -47,7 +47,6 @@ namespace TestTranslator
             keyWords.Add("OneTimeSetUp", "ClassInitialize");
             keyWords.Add("OneTimeTearDown", "ClassCleanup");
             keyWords.Add("Property", "TestProperty");
-            keyWords.Add("Theory", "DataRow");
             keyWords.Add("Description", "Description");
             keyWords.Add("Ignore", "Ignore");
 

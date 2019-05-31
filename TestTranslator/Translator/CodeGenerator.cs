@@ -44,8 +44,22 @@ namespace TestTranslator
             testMethods = document.GetTestMethods();
             assertions = document.GetAssertions();
 
-            
-            foreach (documentUnit du in document.getDocumentStructure())
+            //TODO: delete tmp
+            /*foreach (Class c  in classes)
+            {
+                foreach(Attribute a in c.getListOfAttributes())
+                    AddToResultDocument(a.getKeyWord() + " (" + a.GetArguments() + ")-c");
+                AddToResultDocument("------------------------");
+            }
+
+            foreach (TestMethod tm in testMethods)
+            {
+                foreach (Attribute a in tm.getListOfAttributes())
+                    AddToResultDocument(a.getKeyWord() + " (" + a.GetArguments() + ")-tm");
+                AddToResultDocument("------------------------");
+            }*/
+
+                foreach (documentUnit du in document.getDocumentStructure())
             {
                 switch (du)
                 {
@@ -126,7 +140,7 @@ namespace TestTranslator
                         lineBeggining = "        ";
                         break;
 
-                    case documentUnit.CodeLine:
+                    case documentUnit.CodeLineInClass:
                         
                         AddCodeLine();
                         break;
@@ -203,7 +217,8 @@ namespace TestTranslator
         public void AddClassAttributeWithoutArgs()
         {
             lineBeggining = "    "; //style
-           
+           // AddRightBraceIfNeededAfterClass(); //add "}" after previous class if needed
+
             //form next line:
             string attr = "";
             attr += CheckIfClassIsCommented();

@@ -32,6 +32,10 @@ namespace TestTranslator
                     returnType = "static void";
                     SetClassInitializeMethod();
                 }
+                else if (a.getKeyWord().Equals("ClassCleanup"))
+                {
+                    returnType = "static void";
+                }
             }
         }
 

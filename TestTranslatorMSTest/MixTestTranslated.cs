@@ -7,78 +7,386 @@ using System.Text;
  * comment*/
 namespace TestTranslator
 {
-    //[TestClass]
-    //[Owner("Sofia Krutko")]
-    //public class MSTestMix
-    //{
-        //Document document;
-        //[TestInitialize]
-        //public void MSSetup()
+    [TestClass]
+    public class MSTestMix
+    {
+        [TestInitialize]
+        public void MStest1()
+        {
+            Assert.IsTrue(true);
+        }
+        [TestMethod]
+        public void MStest2()
+        {
+            Assert.IsTrue(true);
+        }
+        [TestCleanup]
+        public void MStest3()
+        {
+            Assert.IsTrue(true);
+        }
+        //[TestMethod]
+        //[Combinatorial]
+        //public void MStest4()
         //{
-            //document = new Document();
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[Pairwise]
+        //public void MStest5()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[Sequential]
+        //public void MStest6()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[Theory]
+        //public void MStest7()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        [ClassInitialize]
+        public static void MStest8(TestContext context)
+        {
+            Assert.IsTrue(true);
+        }
+        [ClassCleanup]
+        public static void MStest9()
+        {
+            Assert.IsTrue(true);
+        }
+        //[TestMethod]
+        //[Parallelizable]
+        //public void MStest10()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[RequiresThread]
+        //public void MStest11()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[Culture]
+        //public void MStest12()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[Explicit]
+        //public void MStest13()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[NonParallelizable]
+        //public void MStest14()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[Repeat(3)]
+        //public void MStest15()
+        //{
+            //Assert.IsTrue(true);
         //}
         //[TestMethod]
         //[Retry(3)]
-        //public void MSTestCollectionAssert()
+        //public void MStest16()
         //{
-            //List<documentUnit> expected = new List<documentUnit>();
-            //expected.Add(documentUnit.Using);
-            //expected.Add(documentUnit.Using);
-            //expected.Add(documentUnit.OneLineCommentAfterCode);
-            //expected.Add(documentUnit.Using);
-            //expected.Add(documentUnit.Namespace);
-            //expected.Add(documentUnit.MultipleLineComment);
-            //List<string> given = new List<string>();
-            //given.Add("first line");
-            //given.Add("second line");
-            //document.addUsingStatement("System.Collections.Generic");
-            //document.addUsingStatement("System.Text");
-            //document.addComment("system.text comment", true);
-            //document.addUsingStatement("System");
-            //document.addNamespaceStatement("DocumentTests");
-            //document.addComment(given, false);
-            //CollectionAssert.AreEqual(expected, document.getDocumentStructure());
+            //Assert.IsTrue(true);
         //}
-    //}
-    [TestClass]
-    public class MSTestMixClass2
-    {
-        CodeGenerator codeGenerator;
-        [TestInitialize]
-        [Description("is repeated before each test method")]
-        public void MSSetup()
+        //[TestMethod]
+        //[TestCaseSource("abc")]
+        //public void MStest17(intn)
+        //{
+            //Assert.IsTrue(true);
+            //static int[] abc = { 12, 3, 4 };
+        //}
+        [TestMethod]
+        [Owner("Author")]
+        public void MStest18()
         {
-            codeGenerator = new CodeGenerator();
+            Assert.IsTrue(true);
         }
         [TestMethod]
-        public void MSgenerate_givenEmptyDoc_returnOneUsing()
+        [Description("Description")]
+        public void MStest19()
         {
-            Document given = new Document();
-            List<string> expected = new List<string>();
-            Assert.AreEqual("using Microsoft.VisualStudio.TestTools.UnitTesting;", codeGenerator.TranslateDocument(given)[0]);
+            Assert.IsTrue(true);
         }
+        [TestMethod]
+        [TestCategory("Category")]
+        public void MStest20()
+        {
+            Assert.IsTrue(true);
+        }
+        [TestMethod]
+        [Ignore("Reason")]
+        public void MStest21()
+        {
+            Assert.IsTrue(true);
+        }
+        //[TestMethod]
+        //[DefaultFloatingPointTolerance(2)]
+        //public void MStest22()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[MaxTime(100)]
+        //public void MStest23()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[Order(3)]
+        //public void MStest24()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[SetCulture("fr-FR")]
+        //public void MStest25()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[SetUICulture("fr-FR")]
+        //public void MStest26()
+        //{
+            //Assert.IsTrue(true);
+        //}
+        //[TestMethod]
+        //[TestOf("typeName")]
+        //public void MStest27()
+        //{
+            //Assert.IsTrue(true);
+        //}
     }
     [TestClass]
-    public class MSTestMixClass3
+    public class MSTestClass1
     {
-        // TextMexClass3 is without any class attribute
-        Scanner scanner;
-        [TestInitialize]
-        public void MSSetup()
-        {
-            scanner = new Scanner();
-        }
         [TestMethod]
-        public void MSisSingleSpecialCar_givenSpecialCar_returnTrue()
+        public void MStest()
         {
-            // Assert.True should be translated
-            Assert.IsTrue(scanner.isSingleSpecialCharacter('.'));
+            Assert.IsTrue(true);
         }
     }
     //[TestClass]
-    //[Description("should be commented")]
-    //public class MSTestMixClass4
+    //[SetUpFixture]
+    //public class MSTestClass2
     //{
-        //Parser parser;
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
     //}
+    //[TestClass]
+    //[SingleThreaded]
+    //public class MSTestClass3
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[TestProperty("aaa", 3)]
+    //public class MSTestClass4
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[TestFixtureSource("tfsname")]
+    //public class MSTestClass5
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[Parallelizable]
+    //public class MSTestClass6
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[RequiresThread]
+    //public class MSTestClass7
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[Culture]
+    //public class MSTestClass8
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[Explicit]
+    //public class MSTestClass9
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[NonParallelizable]
+    //public class MSTestClass10
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[Owner("Author")]
+    //public class MSTestClass11
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[Description("Description")]
+    //public class MSTestClass12
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    [TestClass]
+    [TestCategory("Category")]
+    public class MSTestClass13
+    {
+        [TestMethod]
+        public void MStest()
+        {
+            Assert.IsTrue(true);
+        }
+    }
+    [TestClass]
+    [Ignore("Ignore")]
+    public class MSTestClass14
+    {
+        [TestMethod]
+        public void MStest()
+        {
+            Assert.IsTrue(true);
+        }
+    }
+    //[TestClass]
+    //[DefaultFloatingPointTolerance(3)]
+    //public class MSTestClass15
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[Order(3)]
+    //public class MSTestClass16
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[SetCulture("fr-FR")]
+    //public class MSTestClass17
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[SetUICulture("fr-FR")]
+    //public class MSTestClass18
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    //[TestClass]
+    //[TestOf("typeName")]
+    //public class MSTestClass19
+    //{
+        //[TestMethod]
+        //public void MStest()
+        //{
+            //Assert.IsTrue(true);
+        //}
+    //}
+    [TestClass]
+    public class MSAssertionsMix
+    {
+        [TestMethod]
+        public void MStest1()
+        {
+            Assert.IsTrue(true);
+            Assert.IsFalse(false);
+        }
+        [TestMethod]
+        public void MStest2()
+        {
+            List<int> l = new List<int>();
+            CollectionAssert.DoesNotContain(l, 5);
+        }
+        //[TestMethod]
+        //public void MStest3()
+        //{
+            //StringAssert.DoesNotStartWith("a", " b");
+        //}
+        //[TestMethod]
+        //public void MStest4()
+        //{
+            //FileAssert.DoesNotExist("path");
+        //}
+        //[TestMethod]
+        //public void MStest5()
+        //{
+            //DirectoryAssert.Exists("some directory");
+        //}
+    }
 }

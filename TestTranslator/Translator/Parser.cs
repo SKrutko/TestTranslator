@@ -745,6 +745,8 @@ namespace TestTranslator
 
             keyWords.Add("TestFixture", TokenType.ClassAttributeWithoutArg);
             keyWords.Add("SetUpFixture", TokenType.ClassAttributeWithoutArg);
+            keyWords.Add("SingleThreaded", TokenType.ClassAttributeWithoutArg);
+
 
             keyWords.Add("Property", TokenType.ClassAttributeWithArg);
             keyWords.Add("TestFixtureSource", TokenType.ClassAttributeWithArg);
@@ -754,14 +756,12 @@ namespace TestTranslator
             keyWords.Add("Culture", TokenType.AttributeWithoutArg);
             keyWords.Add("Explicit", TokenType.AttributeWithoutArg);
             keyWords.Add("NonParallelizable", TokenType.AttributeWithoutArg);
-            keyWords.Add("SingleThreaded", TokenType.AttributeWithoutArg);
 
             keyWords.Add("Author", TokenType.AttributeWithArg);
             keyWords.Add("Description", TokenType.AttributeWithArg);
             keyWords.Add("Category", TokenType.AttributeWithArg);
             keyWords.Add("Ignore", TokenType.AttributeWithArg);
             keyWords.Add("DefaultFloatingPointTolerance", TokenType.AttributeWithArg);
-            keyWords.Add("MaxTime", TokenType.AttributeWithArg);
             keyWords.Add("Order", TokenType.AttributeWithArg);
             keyWords.Add("SetCulture", TokenType.AttributeWithArg);
             keyWords.Add("SetUICulture", TokenType.AttributeWithArg);
@@ -780,9 +780,12 @@ namespace TestTranslator
             keyWords.Add("Repeat", TokenType.TestAttributeWithArg);
             keyWords.Add("Retry", TokenType.TestAttributeWithArg);
             keyWords.Add("TestCaseSource", TokenType.TestAttributeWithArg);
+            keyWords.Add("MaxTime", TokenType.TestAttributeWithArg);
 
             keyWords.Add("void", TokenType.ReturnType);
             keyWords.Add("int", TokenType.ReturnType);
+            keyWords.Add("string", TokenType.ReturnType);
+
 
             keyWords.Add("Assert", TokenType.Assertion);
             keyWords.Add("CollectionAssert", TokenType.Assertion);
