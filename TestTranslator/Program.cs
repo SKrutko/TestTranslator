@@ -34,8 +34,9 @@ namespace TestTranslator
             {
                 using (FileStream fs = File.Open(filePath, FileMode.Open))
                 {
-                    //Process.Start("notepad.exe", filePath);
-                    Scanner scanner = new Scanner(fs);
+                    //Scanner scanner = new Scanner(fs);
+                    //scanner.scan();
+                    NewScanner scanner = new NewScanner(fs);
                     scanner.scan();
                 }
             }
@@ -55,5 +56,7 @@ namespace TestTranslator
         {
             return document;
         }
+
+
     }
 }

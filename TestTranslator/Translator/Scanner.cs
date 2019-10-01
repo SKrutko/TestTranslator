@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 
 namespace TestTranslator
 {
+
     public class Scanner
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         FileStream fs;
         List<char> specialSingleCharacters;
         List<char> specialDoubleCharacters;
@@ -32,6 +35,7 @@ namespace TestTranslator
                 Program.createDocument();
                 Parser parser = new Parser();
                 StreamReader sr = new StreamReader(fs);
+                Logger.Info("Scanning started");
                 while (!sr.EndOfStream)
                 {
                     string nextLine = sr.ReadLine();
