@@ -5,7 +5,13 @@ using System.Collections.Generic;
  * */
 namespace TestTranslator
 {
-    public class MoreTest
+    public static class CoolClass
+    {
+
+    }
+
+    [TestFixture]
+    class MoreTest
     {
 
         Parser parser;
@@ -18,15 +24,28 @@ namespace TestTranslator
         [SetUp]
         public void Setup()
         {
-
+            Assert.False(false);
         }
-
 
         [Author("Author")]
         [Test]
         public void test2()
         {
-            Assert.True(true);
+            Assert.IsTrue(true);
+
+            Assert.False(false);
+
         }
     }
+
+        [SingleThreaded]
+        public class MoreTest2
+        {
+        } //trailing trivia
+
+    [SingleThreaded]
+    public class MoreTest3
+    {
+    } //trailing trivia
+
 }

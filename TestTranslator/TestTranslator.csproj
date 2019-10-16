@@ -88,9 +88,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssertionExpression.cs" />
     <Compile Include="Dictionary.cs" />
     <Compile Include="MainFormController.cs" />
     <Compile Include="NewScanner.cs" />
+    <Compile Include="new\AttributeTranslator.cs" />
+    <Compile Include="new\AssertionTranslator.cs" />
     <Compile Include="TestStructure\Assertion.cs" />
     <Compile Include="TestStructure\Attribute.cs" />
     <Compile Include="TestStructure\Class.cs" />

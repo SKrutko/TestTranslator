@@ -8,13 +8,25 @@ namespace TestTranslator
 {
     class Dictionary
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private Dictionary<string, string> AttributesDictionary = new Dictionary<string, string>();
-        private List<string> SimplyTranslatableAttributes = new List<string>();
+        private List<string> TranslatableMethodAttributes = new List<string>();
+        private List<string> TranslatableClassAttributes = new List<string>();
+
+
+        private List<string> TranslatableAssertionsMethods = new List<string>();
+        private Dictionary<string, string> AssertionsMethodsDictionary = new Dictionary<string, string>();
+        private List<string> TranslatableAssertions = new List<string>();
 
         public Dictionary()
         {
             FillInAttributesDictionary();
-            FillInSimplyTranslatableAttributes();
+            FillInTranslatableMethodAttributes();
+            FillInTranslatableClassAttributes();
+            FillInTranslatableAssertions();
+            FillInTranslatableAssertionsMethods();
+            FillInAssertionsMethodsDictionary();
         }
 
         private void FillInAttributesDictionary()
@@ -32,16 +44,43 @@ namespace TestTranslator
             AttributesDictionary.Add("Ignore", "Ignore");
         }
 
-        private void FillInSimplyTranslatableAttributes()
+        private void FillInTranslatableMethodAttributes()
         {
-            SimplyTranslatableAttributes.Add("TestFixture");
-            SimplyTranslatableAttributes.Add("Test");
-            SimplyTranslatableAttributes.Add("Author");
-            SimplyTranslatableAttributes.Add("Category");
-            SimplyTranslatableAttributes.Add("Ignore");
-            SimplyTranslatableAttributes.Add("Description");
-            SimplyTranslatableAttributes.Add("Property");
-            SimplyTranslatableAttributes.Add("Theory");
+            TranslatableMethodAttributes.Add("TestFixture");
+            TranslatableMethodAttributes.Add("Test");
+            TranslatableMethodAttributes.Add("Author");
+            TranslatableMethodAttributes.Add("Category");
+            TranslatableMethodAttributes.Add("Ignore");
+            TranslatableMethodAttributes.Add("Description");
+            TranslatableMethodAttributes.Add("Property");
+        }
+
+        private void FillInTranslatableClassAttributes()
+        {
+            TranslatableClassAttributes.Add("TestFixture");
+            TranslatableClassAttributes.Add("Test");
+            TranslatableClassAttributes.Add("Category");
+            TranslatableClassAttributes.Add("Ignore");
+        }
+
+        private void FillInTranslatableAssertions()
+        {
+            TranslatableAssertions.Add("Assert");
+            TranslatableAssertions.Add("CollectionAssert");
+            TranslatableAssertions.Add("StringAssert");
+        }
+
+        private void FillInTranslatableAssertionsMethods()
+        {
+            TranslatableAssertionsMethods.Add("True");
+            TranslatableAssertionsMethods.Add("IsTrue");
+            TranslatableAssertionsMethods.Add("False");
+            TranslatableAssertionsMethods.Add("IsFalse");
+        }
+        private void FillInAssertionsMethodsDictionary()
+        {
+            AssertionsMethodsDictionary.Add("True", "IsTrue");
+            AssertionsMethodsDictionary.Add("False", "IsFalse");
         }
 
         public string TranslateAttributeName(string name)
@@ -51,9 +90,30 @@ namespace TestTranslator
             return translatedName == null ? name : translatedName;
         }
 
-        public bool IsSimplyTranslatableAttribute(string attribute)
+        public bool IsTranslatableMethodAttribute(string attribute)
         {
-            return SimplyTranslatableAttributes.Contains(attribute);
+            return TranslatableMethodAttributes.Contains(attribute);
         }
+
+        public bool IsTranslatableClassAttribute(string attribute)
+        {
+            return TranslatableClassAttributes.Contains(attribute);
+        }
+
+        public bool IsTranslatable(AssertionExpression assertion)
+        {
+            if (!TranslatableAssertions.Contains(assertion.Class)) return false;
+            return TranslatableAssertionsMethods.Contains( assertion.Method);
+        }
+
+        public AssertionExpression Translate(AssertionExpression assertion)
+        {
+            string translatedMethod;
+            AssertionsMethodsDictionary.TryGetValue(assertion.Method, out translatedMethod);
+            assertion.Method = translatedMethod == null ? assertion.Method : translatedMethod;
+            Logger.Info("method : " + assertion.Method + ", translated method: " + translatedMethod);
+            return assertion;
+        }
+
     }
 }

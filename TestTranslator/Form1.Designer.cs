@@ -34,6 +34,7 @@
             this.rtbMain = new System.Windows.Forms.RichTextBox();
             this.btnSave = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.rtbBefore = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // btnLoadFile
@@ -63,10 +64,10 @@
             // 
             // rtbMain
             // 
-            this.rtbMain.Location = new System.Drawing.Point(4, 5);
+            this.rtbMain.Location = new System.Drawing.Point(591, 1);
             this.rtbMain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.rtbMain.Name = "rtbMain";
-            this.rtbMain.Size = new System.Drawing.Size(1192, 583);
+            this.rtbMain.Size = new System.Drawing.Size(607, 583);
             this.rtbMain.TabIndex = 2;
             this.rtbMain.Text = "";
             // 
@@ -85,11 +86,21 @@
             // 
             this.saveFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog1_FileOk);
             // 
+            // rtbBefore
+            // 
+            this.rtbBefore.Location = new System.Drawing.Point(-6, 1);
+            this.rtbBefore.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.rtbBefore.Name = "rtbBefore";
+            this.rtbBefore.Size = new System.Drawing.Size(589, 583);
+            this.rtbBefore.TabIndex = 4;
+            this.rtbBefore.Text = "";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 692);
+            this.Controls.Add(this.rtbBefore);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.rtbMain);
             this.Controls.Add(this.lblStatusCheck);
@@ -111,6 +122,7 @@
         private System.Windows.Forms.RichTextBox rtbMain;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.RichTextBox rtbBefore;
     }
 }
 

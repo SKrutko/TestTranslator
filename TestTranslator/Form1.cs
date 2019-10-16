@@ -46,6 +46,11 @@ namespace TestTranslator
         {
             rtbMain.Text +=  line + "\n";
         }
+
+        public void printBefore(string line)
+        {
+            rtbBefore.Text += line + "\n";
+        }
         public void EnableButtonSave()
         {
             btnSave.Enabled = true;
@@ -56,7 +61,7 @@ namespace TestTranslator
             if (saveFileDialog1.ShowDialog(this) == DialogResult.OK)
             {
                 string filePath = saveFileDialog1.FileName;
-                System.IO.File.WriteAllLines(filePath, resultList);
+                System.IO.File.WriteAllText(filePath, rtbMain.Text);
             }
         }
 

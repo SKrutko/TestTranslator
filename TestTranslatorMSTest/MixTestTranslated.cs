@@ -173,7 +173,7 @@ namespace TestTranslator
     public class MSTestClass1
     {
         [TestMethod]
-        public void MStest()
+        public void MStest222222()
         {
             Assert.IsTrue(true);
         }
